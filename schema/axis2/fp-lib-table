@@ -1,0 +1,6 @@
+(fp_lib_table
+  (lib (name gy-9250_footprint)(type KiCad)(uri ${KIPRJMOD}/gy-9250_footprint.pretty)(options "")(descr ""))
+  (lib (name digikey-footprints)(type KiCad)(uri /home/andrea/Documenti/libreria/PCB/digikey-kicad-library/digikey-footprints.pretty)(options "")(descr ""))
+  (lib (name axis2)(type KiCad)(uri ${KIPRJMOD}/axis2.pretty)(options "")(descr ""))
+  (lib (name graphics)(type KiCad)(uri ${KIPRJMOD}/graphics.pretty)(options "")(descr ""))
+)
