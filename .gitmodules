@@ -1,0 +1,3 @@
+[submodule "components/drivers"]
+	path = components/drivers
+	url = git@github.com:MyFreertosLab/sdrone_drivers.git

@@ -7,4 +7,4 @@ include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 # Include drivers
 set(EXTRA_COMPONENT_DIRS components/drivers)
 
-project(quad)
+project(sdrone_quad)
