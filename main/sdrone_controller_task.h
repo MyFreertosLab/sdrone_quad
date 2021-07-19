@@ -31,31 +31,41 @@
 #define SDRONE_ALFA_POS    2
 #define SDRONE_THRUST_POS  1
 
+#define SDRONE_AXIS_X_POS    0
+#define SDRONE_AXIS_Y_POS    1
+#define SDRONE_AXIS_Z_POS    2
+
+//#define MOTORS_FRAME_HORIZONTAL_QUADCOPTER_X
+#define MOTORS_FRAME_ONE_HORIZONTAL_AXIS
+#ifdef MOTORS_FRAME_HORIZONTAL_QUADCOPTER_X
+#define SDRONE_NUM_MOTORS 4
+#else
+#ifdef MOTORS_FRAME_HORIZONTAL_HEXACOPTER
+#define SDRONE_NUM_MOTORS 6
+#else
+#ifdef MOTORS_FRAME_ONE_HORIZONTAL_AXIS
+#define SDRONE_NUM_MOTORS 2
+#endif
+#endif
+#endif
+
+
 typedef enum {
 	SDRONE_MOTORS_DRIVER_ID = 1,
 	SDRONE_RC_DRIVER_ID,
 	SDRONE_IMU_DRIVER_ID,
 	SDRONE_CONTROLLER_DRIVER_ID
 } sdrone_drivers_id;
-#ifdef MOTORS_FRAME_HORIZONTAL_HEXACOPTER
-#define SDRONE_NUM_MOTORS 6
-#else
-#ifdef MOTORS_FRAME_TWO_HORIZONTAL_AXIS
-#define SDRONE_NUM_MOTORS 2
 typedef struct {
 	float X[3]; // [teta, omega, alfa] (radians)
 	float U[2]; // [teta, thrust] (radians, newton)
-	float err[3]; // error
-	float ierr[3]; // integral error
-	float derr[3]; // derivative error
+	float W[2]; // [dteta,dtrust] (radians, newton)
+	float Y[SDRONE_NUM_MOTORS]; // (newton)
+	float err;
 	float predX[3]; // [teta, omega, alfa] (radians)
 	float ke;
-	float ki;
-	float kd;
-	float prevErr[3]; // previous error
+	float prevErr; // previous error
 } sdrone_controller_t;
-#endif
-#endif
 
 typedef struct {
 	sdrone_motors_state_t motors_state;

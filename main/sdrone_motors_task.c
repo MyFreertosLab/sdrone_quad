@@ -78,7 +78,7 @@ void sdrone_motors_controller_cycle(
 #ifdef MOTORS_FRAME_HORIZONTAL_HEXACOPTER
 				// TODO: T.B.D.
 #else
-#ifdef MOTORS_FRAME_TWO_HORIZONTAL_AXIS
+#ifdef MOTORS_FRAME_ONE_HORIZONTAL_AXIS
 				ESP_ERROR_CHECK(motors_newton_to_duty(sdrone_motors_state_handle->input.data.thrust[0], &motors_handle->motor[0].duty_cycle));
 				ESP_ERROR_CHECK(motors_newton_to_duty(sdrone_motors_state_handle->input.data.thrust[1], &motors_handle->motor[1].duty_cycle));
 #endif
