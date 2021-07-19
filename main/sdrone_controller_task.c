@@ -24,20 +24,6 @@ esp_err_t sdrone_controller_horizontal_hexacopter_init(sdrone_state_handle_t sdr
 #ifdef MOTORS_FRAME_TWO_HORIZONTAL_AXIS
 esp_err_t sdrone_controller_two_horizontal_axis_init(
 		sdrone_state_handle_t sdrone_state_handle) {
-#ifdef SDRONE_MISUREMENT_MODE
-	sdrone_state_handle->controller_state.misurement_state.misurement_cycle = 0;
-	sdrone_state_handle->controller_state.misurement_state.state =
-			SDRONE_STATE_SET_START_TARGET;
-	sdrone_state_handle->controller_state.misurement_state.target_initial =
-			-0.165 * 4.0;
-	sdrone_state_handle->controller_state.misurement_state.target =
-			sdrone_state_handle->controller_state.misurement_state.target_initial;
-	sdrone_state_handle->controller_state.misurement_state.thrust = 1.8;
-	sdrone_state_handle->controller_state.misurement_state.target_increment =
-			0.165; // 10 deg
-	sdrone_state_handle->controller_state.misurement_state.target_final = 0.165
-			* 4.0 + 0.001; // 10 deg
-#endif
 	sdrone_state_handle->controller_state.ierr[SDRONE_TETA_POS] = 0.0f;
 	sdrone_state_handle->controller_state.ierr[SDRONE_OMEGA_POS] = 0.0f;
 	sdrone_state_handle->controller_state.ierr[SDRONE_ALFA_POS] = 0.0f;
@@ -68,158 +54,8 @@ void sdrone_controller_init(sdrone_state_handle_t sdrone_state_handle) {
 }
 
 void sdrone_controller_print_data(sdrone_state_handle_t sdrone_state_handle) {
-#ifdef SDRONE_MISUREMENT_MODE
-#ifdef SDRONE_PRINT_MISUREMENT_MODE
-	struct timeval now;
-	gettimeofday(&now, NULL);
-	float time = (now.tv_sec) + 1e-6*(now.tv_usec);
-	printf("%5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.6f\n",
-			((float) sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL]
-					* SDRONE_NORM_ROLL_TO_RADIANS_FACTOR),
-			sdrone_state_handle->controller_state.X[SDRONE_TETA_POS],
-			sdrone_state_handle->controller_state.X[SDRONE_OMEGA_POS],
-			sdrone_state_handle->controller_state.X[SDRONE_ALFA_POS],
-			((float) sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE]
-					* SDRONE_NORM_THROTTLE_TO_ACCEL_FACTOR),
-			sdrone_state_handle->motors_state.input.data.thrust[1],
-			sdrone_state_handle->motors_state.input.data.thrust[0],
-			sdrone_state_handle->controller_state.err[SDRONE_TETA_POS],
-			sdrone_state_handle->controller_state.err[SDRONE_OMEGA_POS],
-			sdrone_state_handle->controller_state.err[SDRONE_ALFA_POS],
-			sdrone_state_handle->controller_state.predX[SDRONE_TETA_POS],
-			sdrone_state_handle->controller_state.predX[SDRONE_OMEGA_POS],
-			sdrone_state_handle->controller_state.predX[SDRONE_ALFA_POS],
-			sdrone_state_handle->controller_state.derr[SDRONE_ALFA_POS],
-			time
-			);
-	vTaskDelay(1);
-#endif
-#else
-// do not print anything
-#endif
+	// T.B.D.
 }
-
-#ifdef MOTORS_FRAME_HORIZONTAL_HEXACOPTER
-#ifdef SDRONE_MISUREMENT_MODE
-esp_err_t sdrone_controller_horizontal_hexacopter_misure(sdrone_state_handle_t sdrone_state_handle) {
-	// TODO: T.B.D.
-	return ESP_OK;
-}
-#endif
-#else
-#ifdef MOTORS_FRAME_TWO_HORIZONTAL_AXIS
-#ifdef SDRONE_MISUREMENT_MODE
-esp_err_t sdrone_controller_two_horizontal_axis_misure(
-		sdrone_state_handle_t sdrone_state_handle) {
-	switch (sdrone_state_handle->controller_state.misurement_state.state) {
-	case SDRONE_STATE_SET_START_TARGET: {
-		sdrone_controller_print_data(sdrone_state_handle);
-		sdrone_state_handle->controller_state.misurement_state.state =
-				SDRONE_STATE_WAIT_START_TARGET;
-		sdrone_state_handle->controller_state.misurement_state.target =
-				sdrone_state_handle->controller_state.misurement_state.target_initial;
-		break;
-	}
-	case SDRONE_STATE_WAIT_START_TARGET: {
-		sdrone_controller_print_data(sdrone_state_handle);
-		if (sdrone_state_handle->controller_state.X[SDRONE_TETA_POS]
-				- sdrone_state_handle->controller_state.misurement_state.target
-				<= 0.02
-				&& sdrone_state_handle->controller_state.X[SDRONE_TETA_POS]
-						- sdrone_state_handle->controller_state.misurement_state.target
-						>= -0.02
-				&& sdrone_state_handle->controller_state.X[SDRONE_OMEGA_POS]
-						<= 0.001
-				&& sdrone_state_handle->controller_state.X[SDRONE_OMEGA_POS]
-						>= -0.001) {
-			sdrone_state_handle->controller_state.misurement_state.state =
-					SDRONE_STATE_START_MISUREMENT;
-		}
-		break;
-	}
-	case SDRONE_STATE_START_MISUREMENT: {
-		sdrone_controller_print_data(sdrone_state_handle);
-		sdrone_state_handle->controller_state.misurement_state.state =
-				SDRONE_STATE_INCREMENT_TARGET;
-		break;
-	}
-	case SDRONE_STATE_INCREMENT_TARGET: {
-		sdrone_controller_print_data(sdrone_state_handle);
-		sdrone_state_handle->controller_state.misurement_state.target +=
-				sdrone_state_handle->controller_state.misurement_state.target_increment;
-		if (sdrone_state_handle->controller_state.misurement_state.target
-				<= sdrone_state_handle->controller_state.misurement_state.target_final) {
-			sdrone_state_handle->controller_state.misurement_state.state =
-					SDRONE_STATE_WAIT_INCREMENTED_TARGET;
-		} else {
-			sdrone_state_handle->controller_state.misurement_state.target =
-					sdrone_state_handle->controller_state.misurement_state.target_final;
-			sdrone_state_handle->controller_state.misurement_state.state =
-					SDRONE_STATE_SET_FINAL_TARGET;
-		}
-		break;
-	}
-	case SDRONE_STATE_WAIT_INCREMENTED_TARGET: {
-		sdrone_controller_print_data(sdrone_state_handle);
-		if ((sdrone_state_handle->controller_state.X[SDRONE_TETA_POS]
-				- sdrone_state_handle->controller_state.misurement_state.target)
-				<= 0.02
-				&& (sdrone_state_handle->controller_state.X[SDRONE_TETA_POS]
-						- sdrone_state_handle->controller_state.misurement_state.target)
-						>= -0.02
-				&& sdrone_state_handle->controller_state.X[SDRONE_OMEGA_POS]
-						<= 0.001
-				&& sdrone_state_handle->controller_state.X[SDRONE_OMEGA_POS]
-						>= -0.001) {
-			sdrone_state_handle->controller_state.misurement_state.state =
-					SDRONE_STATE_INCREMENT_TARGET;
-		}
-		break;
-	}
-	case SDRONE_STATE_SET_FINAL_TARGET: {
-		sdrone_controller_print_data(sdrone_state_handle);
-		if (sdrone_state_handle->controller_state.misurement_state.target
-				< (sdrone_state_handle->controller_state.misurement_state.target_initial
-						+ sdrone_state_handle->controller_state.misurement_state.target_increment)) {
-			sdrone_state_handle->controller_state.misurement_state.state =
-					SDRONE_STATE_END;
-		} else {
-			sdrone_state_handle->controller_state.misurement_state.target -=
-					sdrone_state_handle->controller_state.misurement_state.target_increment;
-			sdrone_state_handle->controller_state.misurement_state.state =
-					SDRONE_STATE_WAIT_FINAL_TARGET;
-		}
-		break;
-	}
-	case SDRONE_STATE_WAIT_FINAL_TARGET: {
-		sdrone_controller_print_data(sdrone_state_handle);
-		if (sdrone_state_handle->controller_state.X[SDRONE_TETA_POS]
-				- sdrone_state_handle->controller_state.misurement_state.target
-				<= 0.02
-				&& sdrone_state_handle->controller_state.X[SDRONE_TETA_POS]
-						- sdrone_state_handle->controller_state.misurement_state.target
-						>= -0.02
-				&& sdrone_state_handle->controller_state.X[SDRONE_OMEGA_POS]
-						<= 0.001
-				&& sdrone_state_handle->controller_state.X[SDRONE_OMEGA_POS]
-						>= -0.001) {
-			sdrone_state_handle->controller_state.misurement_state.state =
-					SDRONE_STATE_SET_FINAL_TARGET;
-		}
-		break;
-	}
-	case SDRONE_STATE_END: {
-		sdrone_controller_print_data(sdrone_state_handle);
-		sdrone_state_handle->controller_state.misurement_state.state =
-				SDRONE_STATE_SET_START_TARGET;
-		break;
-	}
-	}
-	return ESP_OK;
-}
-#endif
-#endif
-#endif
 
 #ifdef MOTORS_FRAME_HORIZONTAL_HEXACOPTER
 esp_err_t sdrone_controller_horizontal_hexacopter_control(sdrone_state_handle_t sdrone_state_handle) {
@@ -253,40 +89,9 @@ esp_err_t sdrone_controller_two_horizontal_axis_control(
 					* ((float) SDRONE_NUM_MOTORS);
 
 	// Calc error (predX(prev) - X(actual))
-#ifdef SDRONE_PRINT_MISUREMENT_MODE
-	sdrone_state_handle->controller_state.err[SDRONE_TETA_POS] =
-			sdrone_state_handle->controller_state.predX[SDRONE_TETA_POS] - sdrone_state_handle->controller_state.X[SDRONE_TETA_POS];
-	sdrone_state_handle->controller_state.err[SDRONE_OMEGA_POS] = sdrone_state_handle->controller_state.predX[SDRONE_OMEGA_POS] - sdrone_state_handle->controller_state.X[SDRONE_OMEGA_POS];
-#endif
 	sdrone_state_handle->controller_state.err[SDRONE_ALFA_POS] =sdrone_state_handle->controller_state.predX[SDRONE_ALFA_POS] - sdrone_state_handle->controller_state.X[SDRONE_ALFA_POS];
 
-#ifdef SDRONE_PRINT_MISUREMENT_MODE
-	// Calc integral error
-	sdrone_state_handle->controller_state.ierr[SDRONE_TETA_POS] += sdrone_state_handle->controller_state.err[SDRONE_TETA_POS];
-	sdrone_state_handle->controller_state.ierr[SDRONE_OMEGA_POS] += sdrone_state_handle->controller_state.err[SDRONE_OMEGA_POS];
-	sdrone_state_handle->controller_state.ierr[SDRONE_ALFA_POS] += sdrone_state_handle->controller_state.err[SDRONE_ALFA_POS];
-	if(sdrone_state_handle->controller_state.ierr[SDRONE_ALFA_POS] > 20.0f) {
-		sdrone_state_handle->controller_state.ierr[SDRONE_ALFA_POS] = 20.0f;
-	} else if(sdrone_state_handle->controller_state.ierr[SDRONE_ALFA_POS] < -20.0f) {
-			sdrone_state_handle->controller_state.ierr[SDRONE_ALFA_POS] = -20.0f;
-	};
-
-	// Calc derivative error
-	sdrone_state_handle->controller_state.derr[SDRONE_TETA_POS] =
-			sdrone_state_handle->controller_state.err[SDRONE_TETA_POS] - sdrone_state_handle->controller_state.prevErr[SDRONE_TETA_POS];
-	sdrone_state_handle->controller_state.derr[SDRONE_OMEGA_POS] =
-			sdrone_state_handle->controller_state.err[SDRONE_OMEGA_POS] - sdrone_state_handle->controller_state.prevErr[SDRONE_OMEGA_POS];
-
-	sdrone_state_handle->controller_state.derr[SDRONE_ALFA_POS] =
-			sdrone_state_handle->controller_state.err[SDRONE_ALFA_POS] - sdrone_state_handle->controller_state.prevErr[SDRONE_ALFA_POS];
-
-	// Assign prev errors
-	sdrone_state_handle->controller_state.prevErr[SDRONE_TETA_POS] = sdrone_state_handle->controller_state.err[SDRONE_TETA_POS];
-	sdrone_state_handle->controller_state.prevErr[SDRONE_OMEGA_POS] = sdrone_state_handle->controller_state.err[SDRONE_OMEGA_POS];
-	sdrone_state_handle->controller_state.prevErr[SDRONE_ALFA_POS] = sdrone_state_handle->controller_state.err[SDRONE_ALFA_POS];
-#endif
-
-	// LPF on U
+	// Limit U
 	float U = sdrone_state_handle->controller_state.U[SDRONE_TETA_POS]*SDRONE_REACTIVITY_FACTOR;
 	if(!(-SDRONE_MAX_RADIANS_PER_SECOND <= U && U <= SDRONE_MAX_RADIANS_PER_SECOND)
 	  ) {
@@ -300,15 +105,6 @@ esp_err_t sdrone_controller_two_horizontal_axis_control(
 	// Calc new prediction
 	sdrone_state_handle->controller_state.predX[SDRONE_ALFA_POS] =
 						 + (U-1.5f*sdrone_state_handle->controller_state.X[SDRONE_OMEGA_POS]);
-#ifdef SDRONE_PRINT_MISUREMENT_MODE
-	sdrone_state_handle->controller_state.predX[SDRONE_OMEGA_POS] =
-			                sdrone_state_handle->controller_state.X[SDRONE_OMEGA_POS]
-			              + sdrone_state_handle->controller_state.X[SDRONE_ALFA_POS]*SDRONE_CONTROLLER_DT;
-	sdrone_state_handle->controller_state.predX[SDRONE_TETA_POS] =
-			               sdrone_state_handle->controller_state.X[SDRONE_TETA_POS]
-						 + sdrone_state_handle->controller_state.X[SDRONE_OMEGA_POS]*SDRONE_CONTROLLER_DT
-						 + 0.5f*sdrone_state_handle->controller_state.X[SDRONE_ALFA_POS]*SDRONE_CONTROLLER_DT2;
-#endif
 
 	// controller response
 	Y[0] = (
@@ -386,18 +182,6 @@ void sdrone_controller_cycle(sdrone_state_handle_t sdrone_state_handle) {
 					ESP_ERROR_CHECK(sdrone_controller_horizontal_hexacopter_control(sdrone_state_handle));
 #else
 #ifdef MOTORS_FRAME_TWO_HORIZONTAL_AXIS
-#ifdef SDRONE_MISUREMENT_MODE
-					ESP_ERROR_CHECK(
-							sdrone_controller_two_horizontal_axis_misure(
-									sdrone_state_handle));
-					sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL] =
-							sdrone_state_handle->controller_state.misurement_state.target
-									* (1.0f / SDRONE_NORM_ROLL_TO_RADIANS_FACTOR);
-					sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE] =
-							sdrone_state_handle->controller_state.misurement_state.thrust
-									* (1.0f
-											/ SDRONE_NORM_THROTTLE_TO_ACCEL_FACTOR);
-#endif
 					ESP_ERROR_CHECK(
 							sdrone_controller_two_horizontal_axis_control(
 									sdrone_state_handle));

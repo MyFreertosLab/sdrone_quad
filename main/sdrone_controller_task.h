@@ -30,35 +30,13 @@
 #define SDRONE_OMEGA_POS   1
 #define SDRONE_ALFA_POS    2
 #define SDRONE_THRUST_POS  1
-#define SDRONE_MISUREMENT_MODE
-//#define SDRONE_PRINT_MISUREMENT_MODE
+
 typedef enum {
 	SDRONE_MOTORS_DRIVER_ID = 1,
 	SDRONE_RC_DRIVER_ID,
 	SDRONE_IMU_DRIVER_ID,
 	SDRONE_CONTROLLER_DRIVER_ID
 } sdrone_drivers_id;
-#ifdef SDRONE_MISUREMENT_MODE
-typedef enum {
-	SDRONE_STATE_SET_START_TARGET = 1,
-	SDRONE_STATE_WAIT_START_TARGET = 2,
-	SDRONE_STATE_START_MISUREMENT = 3,
-	SDRONE_STATE_INCREMENT_TARGET = 4,
-	SDRONE_STATE_WAIT_INCREMENTED_TARGET = 5,
-	SDRONE_STATE_SET_FINAL_TARGET = 6,
-	SDRONE_STATE_WAIT_FINAL_TARGET = 7,
-	SDRONE_STATE_END = 8
-} sdrone_misurement_states_t;
-typedef struct {
-	sdrone_misurement_states_t state;
-	float target;
-	float thrust;
-	float target_initial;
-	float target_final;
-	float target_increment;
-	uint8_t misurement_cycle;
-} sdrone_misurement_status_t;
-#endif
 #ifdef MOTORS_FRAME_HORIZONTAL_HEXACOPTER
 #define SDRONE_NUM_MOTORS 6
 #else
@@ -75,9 +53,6 @@ typedef struct {
 	float ki;
 	float kd;
 	float prevErr[3]; // previous error
-#ifdef SDRONE_MISUREMENT_MODE
-	sdrone_misurement_status_t misurement_state;
-#endif
 } sdrone_controller_t;
 #endif
 #endif
