@@ -153,4 +153,5 @@
   (lib (name axis2-rescue)(type Legacy)(uri ${KIPRJMOD}/axis2-rescue.lib)(options "")(descr ""))
   (lib (name New_Library)(type Legacy)(uri /hd/eclipse-cpp-2020-12/eclipse/workspace/sdrone/schema/axis2/axis2-symbols/New_Library.lib)(options "")(descr ""))
   (lib (name axis2-symbols)(type Legacy)(uri /hd/eclipse-cpp-2020-12/eclipse/workspace/sdrone/schema/axis2/axis2-symbols/axis2-symbols.lib)(options "")(descr ""))
+  (lib (name axis4)(type Legacy)(uri /hd/eclipse-cpp-2020-12/eclipse/workspace/sdrone_quad/schema/axis2/axis4.lib)(options "")(descr ""))
 )

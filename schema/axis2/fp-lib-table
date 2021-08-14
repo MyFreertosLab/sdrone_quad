@@ -3,4 +3,5 @@
   (lib (name digikey-footprints)(type KiCad)(uri /home/andrea/Documenti/libreria/PCB/digikey-kicad-library/digikey-footprints.pretty)(options "")(descr ""))
   (lib (name axis2)(type KiCad)(uri ${KIPRJMOD}/axis2.pretty)(options "")(descr ""))
   (lib (name graphics)(type KiCad)(uri ${KIPRJMOD}/graphics.pretty)(options "")(descr ""))
+  (lib (name axis4)(type KiCad)(uri ${KIPRJMOD}/axis4.pretty)(options "")(descr ""))
 )
