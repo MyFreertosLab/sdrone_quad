@@ -37,6 +37,7 @@ void sdrone_motors_controller_init(
 	printf("sdrone_motors_controller_init initial state and motors initialized\n");
 }
 
+uint8_t motors_counter = 0;
 void sdrone_motors_controller_cycle(
 		sdrone_motors_state_handle_t sdrone_motors_state_handle) {
 	motors_handle_t motors_handle = &(sdrone_motors_state_handle->motors);
@@ -75,27 +76,26 @@ void sdrone_motors_controller_cycle(
 				}
 			} else if (sdrone_motors_state_handle->input.data.tx_rx_flag
 					== MOTORS_TXRX_TRANSMITTED) {
+				motors_counter++;
+				motors_counter %= 100;
+				if(motors_counter == 0) {
+					  printf("newton for x,y,z axis: [%5.5f,%5.5f,%5.5f]\n", sdrone_motors_state_handle->input.data.thrust[0], sdrone_motors_state_handle->input.data.thrust[1], sdrone_motors_state_handle->input.data.thrust[2]);
+				}
 #ifdef MOTORS_FRAME_HORIZONTAL_HEXACOPTER
-				// TODO: T.B.D.
+			  // map thrust on six motors
+			  // TODO: T.B.D.
 #else
 #ifdef MOTORS_FRAME_ONE_HORIZONTAL_AXIS
-				ESP_ERROR_CHECK(motors_newton_to_duty(sdrone_motors_state_handle->input.data.thrust[0], &motors_handle->motor[0].duty_cycle));
-				ESP_ERROR_CHECK(motors_newton_to_duty(sdrone_motors_state_handle->input.data.thrust[1], &motors_handle->motor[1].duty_cycle));
+			  // map thrust on two motors
+			  // TODO: T.B.D.
+#else
+#ifdef MOTORS_FRAME_X_QUADCOPTER
+			  // map thrust on four motors
+			  // TODO: T.B.D.
 #endif
 #endif
-//				ESP_ERROR_CHECK(ina3321_load_data(sdrone_motors_state_handle->ina3221_handle));
-//				printf("%2.3f, %2.3f, %d, %d, %d, %d, %d, %d;\n",
-//						sdrone_motors_state_handle->input.data.thrust,
-//						duty_prev,
-//						sdrone_motors_state_handle->ina3221_handle->raw_data.channel_data[0].bus_voltage,
-//						sdrone_motors_state_handle->ina3221_handle->raw_data.channel_data[0].shunt_voltage,
-//						sdrone_motors_state_handle->ina3221_handle->raw_data.channel_data[1].bus_voltage,
-//						sdrone_motors_state_handle->ina3221_handle->raw_data.channel_data[1].shunt_voltage,
-//						sdrone_motors_state_handle->ina3221_handle->raw_data.channel_data[2].bus_voltage,
-//						sdrone_motors_state_handle->ina3221_handle->raw_data.channel_data[2].shunt_voltage
-//					  );
-
-				ESP_ERROR_CHECK(motors_update(motors_handle));
+#endif
+			  ESP_ERROR_CHECK(motors_update(motors_handle));
 				sdrone_motors_state_handle->input.data.tx_rx_flag =
 						MOTORS_TXRX_RECEIVED;
 			}
