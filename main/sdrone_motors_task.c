@@ -79,7 +79,7 @@ void sdrone_motors_controller_cycle(
 				motors_counter++;
 				motors_counter %= 100;
 				if(motors_counter == 0) {
-					  printf("newton for x,y,z axis: [%5.5f,%5.5f,%5.5f]\n", sdrone_motors_state_handle->input.data.thrust[0], sdrone_motors_state_handle->input.data.thrust[1], sdrone_motors_state_handle->input.data.thrust[2]);
+					  printf("newton: [%5.5f,%5.5f,%5.5f], [%5.5f]\n", sdrone_motors_state_handle->input.data.momentum[0], sdrone_motors_state_handle->input.data.momentum[1], sdrone_motors_state_handle->input.data.momentum[2], sdrone_motors_state_handle->input.data.thrust);
 				}
 #ifdef MOTORS_FRAME_HORIZONTAL_HEXACOPTER
 			  // map thrust on six motors
