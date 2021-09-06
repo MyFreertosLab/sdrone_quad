@@ -110,10 +110,6 @@ void sdrone_update_Y_from_predX(sdrone_state_handle_t sdrone_state_handle) {
 			* sdrone_state_handle->controller_state[i].predX[SDRONE_ALFA_POS]
 			+ sdrone_state_handle->controller_state[i].err
 					* sdrone_state_handle->controller_state[i].ke);
-
-	// add thrust
-	//  sdrone_state_handle->controller_state[i].Y += sdrone_state_handle->controller_state[i].W[SDRONE_THRUST_POS];
-
 	}
 }
 
