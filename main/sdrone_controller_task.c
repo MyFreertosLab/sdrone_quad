@@ -113,10 +113,10 @@ void sdrone_update_Y_from_predX(sdrone_state_handle_t sdrone_state_handle) {
 	}
 }
 
-void sdrone_update_motors_thrust_from_Y(
+void sdrone_update_motors_input_data_from_Y(
 		sdrone_state_handle_t sdrone_state_handle) {
 	for(uint8_t  i = 0; i < 3; i++) {
-	  sdrone_state_handle->motors_state.input.data.momentum[i] =
+	  sdrone_state_handle->motors_state.input.data.at[i] =
 			sdrone_state_handle->controller_state[i].Y;
 	}
 	sdrone_state_handle->motors_state.input.data.thrust = sdrone_state_handle->controller_state[2].W[SDRONE_THRUST_POS];
@@ -143,7 +143,7 @@ esp_err_t sdrone_controller_control(
 	sdrone_update_Y_from_predX(sdrone_state_handle);
 
 	// convert response to motors thrust
-	sdrone_update_motors_thrust_from_Y(sdrone_state_handle);
+	sdrone_update_motors_input_data_from_Y(sdrone_state_handle);
 	return ESP_OK;
 }
 
