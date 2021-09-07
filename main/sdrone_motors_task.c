@@ -26,15 +26,6 @@ void sdrone_motors_controller_init(
 	sdrone_motors_state_handle->motors_task_handle =
 			xTaskGetCurrentTaskHandle();
 
-	// voltage & current sensor (3 channels);
-	printf("sdrone_motors_controller_init init ina3221 sensor\n");
-//	static ina3221_t ina3221;
-//	ina3221_handle_t ina3221_handle = &ina3221;
-//	ina3221_handle->i2c_master_port = MOTORS_INA3221_I2C_PORT;
-//	ESP_ERROR_CHECK(ina3221_init(ina3221_handle));
-//	ESP_ERROR_CHECK(ina3221_test_connection(ina3221_handle));
-//	sdrone_motors_state_handle->ina3221_handle = ina3221_handle;
-	printf("sdrone_motors_controller_init initial state and motors initialized\n");
 }
 
 uint8_t motors_counter = 0;
