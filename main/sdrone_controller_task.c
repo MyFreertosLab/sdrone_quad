@@ -84,14 +84,28 @@ void sdrone_update_W_from_U_and_X(sdrone_state_handle_t sdrone_state_handle) {
 		// FIXME: estendere lo stato X con thrust (per ora uso il precedente W);
 		sdrone_state_handle->controller_state[i].W[SDRONE_THRUST_POS] =
 				sdrone_state_handle->controller_state[i].U[SDRONE_THRUST_POS];
-		if (sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS]
-				>= 0.0f&& sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] > SDRONE_MAX_W) {
-			sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] =
-					SDRONE_MAX_W;
-		} else if (sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS]
-				< 0.0f&& sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] < -SDRONE_MAX_W) {
-			sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] =
-					-SDRONE_MAX_W;
+
+		// limit W
+		if(i != Z_POS) {
+			if (sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS]
+					>= 0.0f&& sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] > SDRONE_MAX_W) {
+				sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] =
+						SDRONE_MAX_W;
+			} else if (sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS]
+					< 0.0f&& sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] < -SDRONE_MAX_W) {
+				sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] =
+						-SDRONE_MAX_W;
+			}
+		} else {
+			if (sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS]
+					>= 0.0f&& sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] > SDRONE_MAX_W_Z) {
+				sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] =
+						SDRONE_MAX_W_Z;
+			} else if (sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS]
+					< 0.0f&& sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] < -SDRONE_MAX_W_Z) {
+				sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] =
+						-SDRONE_MAX_W_Z;
+			}
 		}
 	}
 	counter++;
