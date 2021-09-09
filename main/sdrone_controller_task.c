@@ -86,6 +86,7 @@ void sdrone_update_W_from_U_and_X(sdrone_state_handle_t sdrone_state_handle) {
 				sdrone_state_handle->controller_state[i].U[SDRONE_THRUST_POS];
 
 		// limit W
+		// TODO: configurare per ogni asse max_w e togliere i define
 		if(i != Z_POS) {
 			if (sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS]
 					>= 0.0f&& sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] > SDRONE_MAX_W) {
@@ -108,6 +109,7 @@ void sdrone_update_W_from_U_and_X(sdrone_state_handle_t sdrone_state_handle) {
 			}
 		}
 	}
+
 	counter++;
 	counter %= 100;
 	if (counter == 0) {

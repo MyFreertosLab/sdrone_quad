@@ -72,20 +72,12 @@ void sdrone_motors_controller_cycle(
 				if(motors_counter == 0) {
 					  printf("newton: [%5.5f,%5.5f,%5.5f], [%5.5f]\n", sdrone_motors_state_handle->input.data.at[0], sdrone_motors_state_handle->input.data.at[1], sdrone_motors_state_handle->input.data.at[2], sdrone_motors_state_handle->input.data.thrust);
 				}
-#ifdef MOTORS_FRAME_HORIZONTAL_HEXACOPTER
-			  // map thrust on six motors
-			  // TODO: T.B.D.
-#else
-#ifdef MOTORS_FRAME_ONE_HORIZONTAL_AXIS
-			  // map thrust on two motors
-			  // TODO: T.B.D.
-#else
-#ifdef MOTORS_FRAME_X_QUADCOPTER
-			  // map thrust on four motors
-			  // TODO: T.B.D.
-#endif
-#endif
-#endif
+				// set at
+				for(uint8_t i = 0; i < 3; i++) {
+					motors_handle->at[i] = sdrone_motors_state_handle->input.data.at[i];
+				}
+				motors_handle->thrust = sdrone_motors_state_handle->input.data.thrust;
+
 			  ESP_ERROR_CHECK(motors_update(motors_handle));
 				sdrone_motors_state_handle->input.data.tx_rx_flag =
 						MOTORS_TXRX_RECEIVED;
