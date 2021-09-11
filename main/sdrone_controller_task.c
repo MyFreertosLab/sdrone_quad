@@ -147,12 +147,19 @@ void sdrone_update_predX_from_W_and_X(sdrone_state_handle_t sdrone_state_handle)
 
 void sdrone_update_Y_from_predX(sdrone_state_handle_t sdrone_state_handle) {
 	// controller response
-	for (uint8_t i = 0; i < 3; i++) {
-		sdrone_state_handle->controller_state[i].Y =
+	if(sdrone_state_handle->controller_state[Z_POS].W[SDRONE_THRUST_POS] > 2.0f) {
+ 	  for (uint8_t i = 0; i < 3; i++) {
+  		sdrone_state_handle->controller_state[i].Y =
 				(+SDRONE_AXIS_LENGTH
 						* sdrone_state_handle->controller_state[i].predX[SDRONE_ALFA_POS]
 						+ sdrone_state_handle->controller_state[i].err
 								* sdrone_state_handle->controller_state[i].ke);
+	  }
+	} else {
+	 	  for (uint8_t i = 0; i < 3; i++) {
+	  		sdrone_state_handle->controller_state[i].Y =
+					(+SDRONE_AXIS_LENGTH * sdrone_state_handle->controller_state[i].predX[SDRONE_ALFA_POS]);
+		  }
 	}
 }
 
