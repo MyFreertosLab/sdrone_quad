@@ -73,7 +73,7 @@ void sdrone_update_error(sdrone_state_handle_t sdrone_state_handle) {
 	}
 }
 
-uint8_t counter = 0;
+uint16_t counter = 0;
 void sdrone_update_W_from_U_and_X(sdrone_state_handle_t sdrone_state_handle) {
 	// Update W from U and X
 	for (uint8_t i = 0; i < 3; i++) {
@@ -111,7 +111,7 @@ void sdrone_update_W_from_U_and_X(sdrone_state_handle_t sdrone_state_handle) {
 	}
 
 	counter++;
-	counter %= 100;
+	counter %= 500;
 	if (counter == 0) {
 		printf("RC: [%d,%d,%d,%d]\n",
 				sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL],
@@ -158,12 +158,22 @@ void sdrone_update_Y_from_predX(sdrone_state_handle_t sdrone_state_handle) {
 
 void sdrone_update_motors_input_data_from_Y(
 		sdrone_state_handle_t sdrone_state_handle) {
-	for (uint8_t i = 0; i < 3; i++) {
-		sdrone_state_handle->motors_state.input.data.at[i] =
-				sdrone_state_handle->controller_state[i].Y;
+
+	for(uint8_t i = 0; i< 3; i++) {
+		sdrone_state_handle->motors_state.input.data.at[i] = 0.0f;
 	}
+
+#ifdef SDRONE_ENABLE_ROLL
+		sdrone_state_handle->motors_state.input.data.at[X_POS] = sdrone_state_handle->controller_state[X_POS].Y;
+#endif
+#ifdef SDRONE_ENABLE_PITCH
+		sdrone_state_handle->motors_state.input.data.at[Y_POS] = sdrone_state_handle->controller_state[Y_POS].Y;
+#endif
+#ifdef SDRONE_ENABLE_YAW
+		sdrone_state_handle->motors_state.input.data.at[Z_POS] = sdrone_state_handle->controller_state[Z_POS].Y;
+#endif
 	sdrone_state_handle->motors_state.input.data.thrust =
-			sdrone_state_handle->controller_state[2].W[SDRONE_THRUST_POS];
+			sdrone_state_handle->controller_state[Z_POS].W[SDRONE_THRUST_POS];
 }
 
 esp_err_t sdrone_controller_control(sdrone_state_handle_t sdrone_state_handle) {
@@ -214,6 +224,15 @@ void sdrone_controller_cycle(sdrone_state_handle_t sdrone_state_handle) {
 						sizeof(rc_data));
 				sdrone_state_handle->rc_state.rc_data.data.txrx_signal =
 						RC_TXRX_RECEIVED;
+				if(sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE] <= 2) {
+					if(sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH] <= -160) {
+						sdrone_state_handle->motors_state.input.isCommand = true;
+						sdrone_state_handle->motors_state.input.command.type = MOTORS_DISARM;
+					} else if(sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH] >= 160) {
+						sdrone_state_handle->motors_state.input.isCommand = true;
+						sdrone_state_handle->motors_state.input.command.type = MOTORS_ARM;
+					}
+				}
 			}
 			if (sdrone_state_handle->imu_state.imu.data.txrx_signal
 					== IMU_TXRX_TRANSMITTED) {

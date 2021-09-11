@@ -28,13 +28,11 @@ void sdrone_motors_controller_init(
 
 }
 
-uint8_t motors_counter = 0;
+uint16_t motors_counter = 0;
 void sdrone_motors_controller_cycle(
 		sdrone_motors_state_handle_t sdrone_motors_state_handle) {
 	motors_handle_t motors_handle = &(sdrone_motors_state_handle->motors);
 
-	printf("sdrone_motors_task_init::Arm motors\n");
-	ESP_ERROR_CHECK(motors_arm(motors_handle));
 	vTaskDelay(pdMS_TO_TICKS(10));
 
 	while (true) {
@@ -67,11 +65,6 @@ void sdrone_motors_controller_cycle(
 				}
 			} else if (sdrone_motors_state_handle->input.data.tx_rx_flag
 					== MOTORS_TXRX_TRANSMITTED) {
-				motors_counter++;
-				motors_counter %= 100;
-				if(motors_counter == 0) {
-					  printf("newton: [%5.5f,%5.5f,%5.5f], [%5.5f]\n", sdrone_motors_state_handle->input.data.at[0], sdrone_motors_state_handle->input.data.at[1], sdrone_motors_state_handle->input.data.at[2], sdrone_motors_state_handle->input.data.thrust);
-				}
 				// set at
 				for(uint8_t i = 0; i < 3; i++) {
 					motors_handle->at[i] = sdrone_motors_state_handle->input.data.at[i];
@@ -81,6 +74,13 @@ void sdrone_motors_controller_cycle(
 			  ESP_ERROR_CHECK(motors_update(motors_handle));
 				sdrone_motors_state_handle->input.data.tx_rx_flag =
 						MOTORS_TXRX_RECEIVED;
+
+				motors_counter++;
+				motors_counter %= 500;
+				if(motors_counter == 0) {
+					  printf("axis .: [%5.5f,%5.5f,%5.5f,%5.5f]\n", sdrone_motors_state_handle->input.data.at[0], sdrone_motors_state_handle->input.data.at[1], sdrone_motors_state_handle->input.data.at[2], sdrone_motors_state_handle->input.data.thrust);
+					  printf("motors: [%5.5f,%5.5f,%5.5f,%5.5f]\n", motors_handle->motor[0].duty_cycle, motors_handle->motor[1].duty_cycle, motors_handle->motor[2].duty_cycle, motors_handle->motor[3].duty_cycle);
+				}
 			}
 		}
 	}

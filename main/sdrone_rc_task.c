@@ -42,7 +42,19 @@ void sdrone_rc_task(void *arg) {
 
 	while (true) {
 		ESP_ERROR_CHECK(rc_start(rc_data_local_handle));
-		if (rc_data_local_handle->data.txrx_signal == RC_TXRX_TRANSMITTED) {
+		if (rc_data_local_handle->data.txrx_signal == RC_TXRX_TRANSMITTED || rc_data_local_handle->data.txrx_signal == RC_TXRX_DATA_NOT_RECEIVED) {
+
+			if(rc_data_local_handle->data.txrx_signal == RC_TXRX_DATA_NOT_RECEIVED) {
+				rc_data_local_handle->data.raw[RC_ROLL] =
+						rc_handle->rc_channels_range[RC_ROLL].center;
+				rc_data_local_handle->data.raw[RC_PITCH] =
+						rc_handle->rc_channels_range[RC_PITCH].min;
+				rc_data_local_handle->data.raw[RC_YAW] =
+						rc_handle->rc_channels_range[RC_YAW].center;
+				rc_data_local_handle->data.raw[RC_THROTTLE] =
+						rc_handle->rc_channels_range[RC_THROTTLE].min;
+			}
+
 			for (uint8_t i = 0; i < RC_MAX_CHANNELS; i++) {
 				if (rc_data_local_handle->data.raw[i]
 						< rc_data_local_handle->rc_channels_range[i].center) {
@@ -60,6 +72,7 @@ void sdrone_rc_task(void *arg) {
 			if ((sdrone_rc_state_handle->controller_task_handle != NULL) && (rc_handle->data.txrx_signal != RC_TXRX_TRANSMITTED)) {
 				memcpy(rc_handle, rc_data_local_handle,
 						sizeof(*rc_data_local_handle));
+				rc_handle->data.txrx_signal = RC_TXRX_TRANSMITTED;
 				// Throttle is in range [0,SDRONE_RC_CHANNEL_RANGE]
 				rc_handle->data.norm[RC_THROTTLE] = rc_data_local_handle->data.norm[RC_THROTTLE]+SDRONE_RC_CHANNEL_RANGE_HALF;
 				xTaskNotify(sdrone_rc_state_handle->controller_task_handle,
