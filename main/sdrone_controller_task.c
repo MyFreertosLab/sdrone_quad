@@ -20,7 +20,7 @@ void sdrone_controller_init(sdrone_state_handle_t sdrone_state_handle) {
 	memset(sdrone_state_handle, 0, sizeof(*sdrone_state_handle));
 	sdrone_state_handle->driver_id = (uint32_t) SDRONE_CONTROLLER_DRIVER_ID;
 	for (uint8_t i = 0; i < 3; i++) {
-		sdrone_state_handle->controller_state[i].ke = 0.0f;
+		sdrone_state_handle->controller_state[i].ke = SDRONE_KE;
 		sdrone_state_handle->controller_state[i].prevErr = 0.0f;
 		sdrone_state_handle->controller_state[i].W[SDRONE_THRUST_POS] = 0.0f;
 		sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] = 0.0f;
