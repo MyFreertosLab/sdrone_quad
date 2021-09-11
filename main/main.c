@@ -76,4 +76,3 @@ void app_main(void)
 	xTaskNotify(controller_task_handle,pdPASS,eSetValueWithOverwrite);
 
 }
-
