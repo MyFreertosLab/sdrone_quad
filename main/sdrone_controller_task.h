@@ -31,6 +31,7 @@
 #define SDRONE_REACTIVITY_FACTOR 1.5f
 //#define SDRONE_KE 0.5f
 #define SDRONE_KE 0.8f
+#define SDRONE_KE_Z 0.4f
 
 #define SDRONE_AXIS_LENGTH 0.20f
 #define SDRONE_TETA_POS    0

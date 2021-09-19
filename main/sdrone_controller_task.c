@@ -26,7 +26,7 @@ void sdrone_controller_init(sdrone_state_handle_t sdrone_state_handle) {
 		sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] = 0.0f;
 		sdrone_state_handle->controller_state[i].Y = 0.0f;
 	}
-
+	sdrone_state_handle->controller_state[Z_POS].ke = SDRONE_KE_Z;
 }
 
 void sdrone_controller_print_data(sdrone_state_handle_t sdrone_state_handle) {
