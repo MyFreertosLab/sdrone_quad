@@ -31,7 +31,9 @@
 #define SDRONE_REACTIVITY_FACTOR 1.5f
 //#define SDRONE_KE 0.5f
 #define SDRONE_KE 0.8f
+#define SDRONE_KI 0.008f
 #define SDRONE_KE_Z 0.4f
+#define ACC_CORRECTION_KE 1.0f
 
 #define SDRONE_AXIS_LENGTH 0.20f
 #define SDRONE_TETA_POS    0
@@ -74,8 +76,10 @@ typedef struct {
 	float W[2]; // [dteta,dtrust] (radians, newton)
 	float Y; // (newton)
 	float err;
+	float ierr;
 	float predX[3]; // [teta, omega, alfa] (radians)
 	float ke;
+	float ki;
 	float prevErr; // previous error
 } sdrone_controller_t;
 

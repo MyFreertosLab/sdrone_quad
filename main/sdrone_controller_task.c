@@ -21,12 +21,14 @@ void sdrone_controller_init(sdrone_state_handle_t sdrone_state_handle) {
 	sdrone_state_handle->driver_id = (uint32_t) SDRONE_CONTROLLER_DRIVER_ID;
 	for (uint8_t i = 0; i < 3; i++) {
 		sdrone_state_handle->controller_state[i].ke = SDRONE_KE;
+		sdrone_state_handle->controller_state[i].ki = SDRONE_KI;
 		sdrone_state_handle->controller_state[i].prevErr = 0.0f;
 		sdrone_state_handle->controller_state[i].W[SDRONE_THRUST_POS] = 0.0f;
 		sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] = 0.0f;
 		sdrone_state_handle->controller_state[i].Y = 0.0f;
 	}
 	sdrone_state_handle->controller_state[Z_POS].ke = SDRONE_KE_Z;
+	sdrone_state_handle->controller_state[Z_POS].ki = 0.0f;
 }
 
 void sdrone_controller_print_data(sdrone_state_handle_t sdrone_state_handle) {
@@ -55,6 +57,7 @@ void sdrone_update_U_from_RC(sdrone_state_handle_t sdrone_state_handle) {
 						* SDRONE_NORM_ROLL_TO_RADIANS_FACTOR;
 	} else {
 		sdrone_state_handle->controller_state[X_POS].U[SDRONE_TETA_POS] = 0.0f;
+//				-sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.x*(ACC_CORRECTION_KE+(1.0f+((float)sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX1])/200.0f));
 	}
 
 	if( abs(sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH]) > 10) {
@@ -63,6 +66,7 @@ void sdrone_update_U_from_RC(sdrone_state_handle_t sdrone_state_handle) {
 						* SDRONE_NORM_PITCH_TO_RADIANS_FACTOR;
 	} else {
 		sdrone_state_handle->controller_state[Y_POS].U[SDRONE_TETA_POS] = 0.0f;
+//				-sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.y*(ACC_CORRECTION_KE+(1.0f+((float)sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX1])/200.0f));
 	}
 
 	if( abs(sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW]) > 10) {
@@ -85,6 +89,7 @@ void sdrone_update_error(sdrone_state_handle_t sdrone_state_handle) {
 		sdrone_state_handle->controller_state[i].err =
 				sdrone_state_handle->controller_state[i].predX[SDRONE_ALFA_POS]
 						- sdrone_state_handle->controller_state[i].X[SDRONE_ALFA_POS];
+		sdrone_state_handle->controller_state[i].ierr += sdrone_state_handle->controller_state[i].err;
 	}
 }
 
@@ -128,25 +133,35 @@ void sdrone_update_W_from_U_and_X(sdrone_state_handle_t sdrone_state_handle) {
 	counter++;
 	counter %= 500;
 	if (counter == 0) {
-		printf("RC: [%d,%d,%d,%d]\n",
+		printf("RC: [%d,%d,%d,%d,%d,%d]\n",
 				sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL],
 				sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH],
 				sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW],
-				sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE]);
+				sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE],
+				sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX1],
+				sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX2]);
 		printf("U: [%5.5f,%5.5f,%5.5f,%5.5f]\n",
 				sdrone_state_handle->controller_state[0].U[SDRONE_TETA_POS],
 				sdrone_state_handle->controller_state[1].U[SDRONE_TETA_POS],
 				sdrone_state_handle->controller_state[2].U[SDRONE_TETA_POS],
 				sdrone_state_handle->controller_state[2].U[SDRONE_THRUST_POS]);
-		printf("W: [%5.5f,%5.5f,%5.5f,%5.5f]\n",
-				sdrone_state_handle->controller_state[0].W[SDRONE_TETA_POS],
-				sdrone_state_handle->controller_state[1].W[SDRONE_TETA_POS],
-				sdrone_state_handle->controller_state[2].W[SDRONE_TETA_POS],
-				sdrone_state_handle->controller_state[2].W[SDRONE_THRUST_POS]);
+//		printf("W: [%5.5f,%5.5f,%5.5f,%5.5f]\n",
+//				sdrone_state_handle->controller_state[0].W[SDRONE_TETA_POS],
+//				sdrone_state_handle->controller_state[1].W[SDRONE_TETA_POS],
+//				sdrone_state_handle->controller_state[2].W[SDRONE_TETA_POS],
+//				sdrone_state_handle->controller_state[2].W[SDRONE_THRUST_POS]);
 		printf("RPY: [%5.5f,%5.5f,%5.5f]\n",
 				sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.x,
 				sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.y,
 				sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.z);
+		printf("ACC: [%5.5f,%5.5f,%5.5f]\n",
+				(float)sdrone_state_handle->imu_state.imu.data.accel.cal.kalman[X_POS].X/(float)sdrone_state_handle->imu_state.imu.data.accel.lsb,
+				(float)sdrone_state_handle->imu_state.imu.data.accel.cal.kalman[Y_POS].X/(float)sdrone_state_handle->imu_state.imu.data.accel.lsb,
+				(float)(sdrone_state_handle->imu_state.imu.data.accel.cal.kalman[Z_POS].X-sdrone_state_handle->imu_state.imu.data.accel.lsb)/(float)sdrone_state_handle->imu_state.imu.data.accel.lsb);
+		printf("ATT: [%5.5f,%5.5f,%5.5f]\n",
+				sdrone_state_handle->imu_state.imu.data.attitude[X_POS],
+				sdrone_state_handle->imu_state.imu.data.attitude[Y_POS],
+				sdrone_state_handle->imu_state.imu.data.attitude[Z_POS]);
 	}
 }
 void sdrone_update_predX_from_W_and_X(sdrone_state_handle_t sdrone_state_handle) {
@@ -155,7 +170,7 @@ void sdrone_update_predX_from_W_and_X(sdrone_state_handle_t sdrone_state_handle)
 		sdrone_state_handle->controller_state[i].predX[SDRONE_ALFA_POS] =
 				+(sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS]
 						/ SDRONE_CONTROLLER_REACTIVITY_DT
-						- sdrone_state_handle->controller_state[i].X[SDRONE_OMEGA_POS])
+						- 1.5*sdrone_state_handle->controller_state[i].X[SDRONE_OMEGA_POS])
 						* SDRONE_REACTIVITY_FACTOR;
 	}
 }
@@ -167,13 +182,15 @@ void sdrone_update_Y_from_predX(sdrone_state_handle_t sdrone_state_handle) {
   		sdrone_state_handle->controller_state[i].Y =
 				(+SDRONE_AXIS_LENGTH
 						* sdrone_state_handle->controller_state[i].predX[SDRONE_ALFA_POS]
-						+ sdrone_state_handle->controller_state[i].err
-								* sdrone_state_handle->controller_state[i].ke);
+						+ sdrone_state_handle->controller_state[i].err * sdrone_state_handle->controller_state[i].ke
+						+ sdrone_state_handle->controller_state[i].ierr * sdrone_state_handle->controller_state[i].ki
+				);
 	  }
 	} else {
 	 	  for (uint8_t i = 0; i < 3; i++) {
 	  		sdrone_state_handle->controller_state[i].Y =
 					(+SDRONE_AXIS_LENGTH * sdrone_state_handle->controller_state[i].predX[SDRONE_ALFA_POS]);
+	  		sdrone_state_handle->controller_state[i].ierr = 0.0f;
 		  }
 	}
 }
