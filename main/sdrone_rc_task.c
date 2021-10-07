@@ -58,10 +58,9 @@ void sdrone_rc_task(void *arg) {
 			for (uint8_t i = 0; i < RC_MAX_CHANNELS; i++) {
 				if (rc_data_local_handle->data.raw[i]
 						< rc_data_local_handle->rc_channels_range[i].center) {
-					rc_data_local_handle->data.norm[i] = (int16_t) ((rc_data_local_handle->rc_channels_range[i].center
+					rc_data_local_handle->data.norm[i] = -(int16_t)((rc_data_local_handle->rc_channels_range[i].center
 							- rc_data_local_handle->data.raw[i])
 							* scale_factor_left[i]);
-					rc_data_local_handle->data.norm[i] = -rc_data_local_handle->data.norm[i];
 				} else {
 					rc_data_local_handle->data.norm[i] =
 							(int16_t) ((rc_data_local_handle->data.raw[i]
@@ -72,16 +71,16 @@ void sdrone_rc_task(void *arg) {
 			if ((sdrone_rc_state_handle->controller_task_handle != NULL) && (rc_handle->data.txrx_signal != RC_TXRX_TRANSMITTED)) {
 				memcpy(rc_handle, rc_data_local_handle,
 						sizeof(*rc_data_local_handle));
-				rc_handle->data.txrx_signal = RC_TXRX_TRANSMITTED;
 				// Throttle is in range [0,SDRONE_RC_CHANNEL_RANGE]
 				rc_handle->data.norm[RC_THROTTLE] = rc_data_local_handle->data.norm[RC_THROTTLE]+SDRONE_RC_CHANNEL_RANGE_HALF;
+				// Yaw is left positive and right negative
+				rc_handle->data.norm[RC_YAW] = -rc_data_local_handle->data.norm[RC_YAW];
+				rc_handle->data.txrx_signal = RC_TXRX_TRANSMITTED;
 				xTaskNotify(sdrone_rc_state_handle->controller_task_handle,
 						sdrone_rc_state_handle->driver_id,
 						eSetValueWithOverwrite);
-
 			}
 		}
 	}
 	vTaskDelete(NULL);
-
 }

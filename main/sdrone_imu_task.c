@@ -9,7 +9,7 @@
 #include <sdrone_imu_task.h>
 #include <mpu9250_accel.h>
 #include <mpu9250_gyro.h>
-#include <mpu9250_calibrator.h>
+#include <mpu9250_mag.h>
 
 void sdrone_imu_init(
 		sdrone_imu_state_handle_t sdrone_imu_state_handle) {
