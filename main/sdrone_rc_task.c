@@ -44,6 +44,7 @@ void sdrone_rc_task(void *arg) {
 		ESP_ERROR_CHECK(rc_start(rc_data_local_handle));
 		if (rc_data_local_handle->data.txrx_signal == RC_TXRX_TRANSMITTED || rc_data_local_handle->data.txrx_signal == RC_TXRX_DATA_NOT_RECEIVED) {
 
+			// FIXME: Inviare allarme
 			if(rc_data_local_handle->data.txrx_signal == RC_TXRX_DATA_NOT_RECEIVED) {
 				rc_data_local_handle->data.raw[RC_ROLL] =
 						rc_handle->rc_channels_range[RC_ROLL].center;

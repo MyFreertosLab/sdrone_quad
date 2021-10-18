@@ -5,6 +5,7 @@
 #include <nvs.h>
 #include <driver/i2c.h>
 #include <sdrone_controller_task.h>
+#include <telemetry.h>
 
 static sdrone_state_t sdrone_state;
 static sdrone_state_handle_t sdrone_state_handle = &sdrone_state;
@@ -74,5 +75,9 @@ void app_main(void)
 
     // Send notification to Controller.
 	xTaskNotify(controller_task_handle,pdPASS,eSetValueWithOverwrite);
+
+	// init wifi AP
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    wifi_init_softap();
 
 }
