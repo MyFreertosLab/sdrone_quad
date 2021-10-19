@@ -68,7 +68,8 @@ typedef enum {
 	SDRONE_MOTORS_DRIVER_ID = 1,
 	SDRONE_RC_DRIVER_ID,
 	SDRONE_IMU_DRIVER_ID,
-	SDRONE_CONTROLLER_DRIVER_ID
+	SDRONE_CONTROLLER_DRIVER_ID,
+	SDRONE_TELEMETRY_DRIVER_ID
 } sdrone_drivers_id;
 typedef struct {
 	float X[3]; // [teta, omega, alfa] (radians)

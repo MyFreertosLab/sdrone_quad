@@ -77,10 +77,10 @@ void sdrone_motors_controller_cycle(
 
 				motors_counter++;
 				motors_counter %= 500;
-				if(motors_counter == 0) {
-					  printf("axis .: [%5.5f,%5.5f,%5.5f,%5.5f]\n", sdrone_motors_state_handle->input.data.at[0], sdrone_motors_state_handle->input.data.at[1], sdrone_motors_state_handle->input.data.at[2], sdrone_motors_state_handle->input.data.thrust);
-//					  printf("motors: [%5.5f,%5.5f,%5.5f,%5.5f]\n", motors_handle->motor[0].duty_cycle, motors_handle->motor[1].duty_cycle, motors_handle->motor[2].duty_cycle, motors_handle->motor[3].duty_cycle);
-				}
+//				if(motors_counter == 0) {
+//					  printf("axis .: [%5.5f,%5.5f,%5.5f,%5.5f]\n", sdrone_motors_state_handle->input.data.at[0], sdrone_motors_state_handle->input.data.at[1], sdrone_motors_state_handle->input.data.at[2], sdrone_motors_state_handle->input.data.thrust);
+////					  printf("motors: [%5.5f,%5.5f,%5.5f,%5.5f]\n", motors_handle->motor[0].duty_cycle, motors_handle->motor[1].duty_cycle, motors_handle->motor[2].duty_cycle, motors_handle->motor[3].duty_cycle);
+//				}
 			}
 		}
 	}

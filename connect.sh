@@ -1,0 +1,2 @@
+nmcli con up sdronequad
+

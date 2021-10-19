@@ -2,7 +2,7 @@
 set(COMPONENT_REQUIRES )
 set(COMPONENT_PRIV_REQUIRES )
 
-set(COMPONENT_SRCS "main.c" "sdrone_controller_task.c" "sdrone_motors_task.c" "sdrone_rc_task.c" "sdrone_imu_task.c")
+set(COMPONENT_SRCS "main.c" "sdrone_controller_task.c" "sdrone_motors_task.c" "sdrone_rc_task.c" "sdrone_imu_task.c" "sdrone_telemetry_task.c")
 set(COMPONENT_ADD_INCLUDEDIRS ".")
 
 register_component()

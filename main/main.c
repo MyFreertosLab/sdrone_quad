@@ -5,7 +5,7 @@
 #include <nvs.h>
 #include <driver/i2c.h>
 #include <sdrone_controller_task.h>
-#include <telemetry.h>
+#include <sdrone_telemetry_task.h>
 
 static sdrone_state_t sdrone_state;
 static sdrone_state_handle_t sdrone_state_handle = &sdrone_state;
@@ -13,6 +13,10 @@ static TaskHandle_t controller_task_handle;
 static TaskHandle_t motors_task_handle;
 static TaskHandle_t rc_task_handle;
 static TaskHandle_t imu_task_handle;
+
+static TaskHandle_t telemetry_task_handle;
+static sdrone_telemetry_task_state_t telemetry_state;
+static sdrone_telemetry_task_state_handle_t telemetry_state_handle = &telemetry_state;
 
 static esp_err_t my_i2c_init(int i2c_master_port) {
 	i2c_config_t conf = {
@@ -76,8 +80,11 @@ void app_main(void)
     // Send notification to Controller.
 	xTaskNotify(controller_task_handle,pdPASS,eSetValueWithOverwrite);
 
-	// init wifi AP
+    // init telemetry
     vTaskDelay(pdMS_TO_TICKS(1000));
-    wifi_init_softap();
-
+	telemetry_state_handle->controller_task_handle = controller_task_handle;
+	telemetry_state_handle->controller_driver_id = (uint32_t)SDRONE_CONTROLLER_DRIVER_ID;
+	telemetry_state_handle->sdrone_state_handle = sdrone_state_handle;
+    xTaskCreate(sdrone_telemetry_task, "sdrone_telemetry_task", 4096, telemetry_state_handle, 5, &telemetry_task_handle);
+	telemetry_state_handle->driver_id = (uint32_t)SDRONE_TELEMETRY_DRIVER_ID;
 }

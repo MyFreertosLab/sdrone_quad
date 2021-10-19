@@ -132,37 +132,37 @@ void sdrone_update_W_from_U_and_X(sdrone_state_handle_t sdrone_state_handle) {
 
 	counter++;
 	counter %= 500;
-	if (counter == 0) {
-		printf("RC: [%d,%d,%d,%d,%d,%d]\n",
-				sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL],
-				sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH],
-				sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW],
-				sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE],
-				sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX1],
-				sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX2]);
-		printf("U: [%5.5f,%5.5f,%5.5f,%5.5f]\n",
-				sdrone_state_handle->controller_state[0].U[SDRONE_TETA_POS],
-				sdrone_state_handle->controller_state[1].U[SDRONE_TETA_POS],
-				sdrone_state_handle->controller_state[2].U[SDRONE_TETA_POS],
-				sdrone_state_handle->controller_state[2].U[SDRONE_THRUST_POS]);
-//		printf("W: [%5.5f,%5.5f,%5.5f,%5.5f]\n",
-//				sdrone_state_handle->controller_state[0].W[SDRONE_TETA_POS],
-//				sdrone_state_handle->controller_state[1].W[SDRONE_TETA_POS],
-//				sdrone_state_handle->controller_state[2].W[SDRONE_TETA_POS],
-//				sdrone_state_handle->controller_state[2].W[SDRONE_THRUST_POS]);
-		printf("RPY: [%5.5f,%5.5f,%5.5f]\n",
-				sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.x,
-				sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.y,
-				sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.z);
-		printf("ACC: [%5.5f,%5.5f,%5.5f]\n",
-				(float)sdrone_state_handle->imu_state.imu.data.accel.cal.kalman[X_POS].X/(float)sdrone_state_handle->imu_state.imu.data.accel.lsb,
-				(float)sdrone_state_handle->imu_state.imu.data.accel.cal.kalman[Y_POS].X/(float)sdrone_state_handle->imu_state.imu.data.accel.lsb,
-				(float)(sdrone_state_handle->imu_state.imu.data.accel.cal.kalman[Z_POS].X-sdrone_state_handle->imu_state.imu.data.accel.lsb)/(float)sdrone_state_handle->imu_state.imu.data.accel.lsb);
-		printf("ATT: [%5.5f,%5.5f,%5.5f]\n",
-				sdrone_state_handle->imu_state.imu.data.attitude[X_POS],
-				sdrone_state_handle->imu_state.imu.data.attitude[Y_POS],
-				sdrone_state_handle->imu_state.imu.data.attitude[Z_POS]);
-	}
+//	if (counter == 0) {
+//		printf("RC: [%d,%d,%d,%d,%d,%d]\n",
+//				sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL],
+//				sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH],
+//				sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW],
+//				sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE],
+//				sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX1],
+//				sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX2]);
+//		printf("U: [%5.5f,%5.5f,%5.5f,%5.5f]\n",
+//				sdrone_state_handle->controller_state[0].U[SDRONE_TETA_POS],
+//				sdrone_state_handle->controller_state[1].U[SDRONE_TETA_POS],
+//				sdrone_state_handle->controller_state[2].U[SDRONE_TETA_POS],
+//				sdrone_state_handle->controller_state[2].U[SDRONE_THRUST_POS]);
+////		printf("W: [%5.5f,%5.5f,%5.5f,%5.5f]\n",
+////				sdrone_state_handle->controller_state[0].W[SDRONE_TETA_POS],
+////				sdrone_state_handle->controller_state[1].W[SDRONE_TETA_POS],
+////				sdrone_state_handle->controller_state[2].W[SDRONE_TETA_POS],
+////				sdrone_state_handle->controller_state[2].W[SDRONE_THRUST_POS]);
+//		printf("RPY: [%5.5f,%5.5f,%5.5f]\n",
+//				sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.x,
+//				sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.y,
+//				sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.z);
+//		printf("ACC: [%5.5f,%5.5f,%5.5f]\n",
+//				(float)sdrone_state_handle->imu_state.imu.data.accel.cal.kalman[X_POS].X/(float)sdrone_state_handle->imu_state.imu.data.accel.lsb,
+//				(float)sdrone_state_handle->imu_state.imu.data.accel.cal.kalman[Y_POS].X/(float)sdrone_state_handle->imu_state.imu.data.accel.lsb,
+//				(float)(sdrone_state_handle->imu_state.imu.data.accel.cal.kalman[Z_POS].X-sdrone_state_handle->imu_state.imu.data.accel.lsb)/(float)sdrone_state_handle->imu_state.imu.data.accel.lsb);
+//		printf("ATT: [%5.5f,%5.5f,%5.5f]\n",
+//				sdrone_state_handle->imu_state.imu.data.attitude[X_POS],
+//				sdrone_state_handle->imu_state.imu.data.attitude[Y_POS],
+//				sdrone_state_handle->imu_state.imu.data.attitude[Z_POS]);
+//	}
 }
 void sdrone_update_predX_from_W_and_X(sdrone_state_handle_t sdrone_state_handle) {
 	// Calc new prediction
