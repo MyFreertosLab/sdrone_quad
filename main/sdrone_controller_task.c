@@ -51,30 +51,20 @@ void sdrone_update_X_from_IMU(sdrone_state_handle_t sdrone_state_handle) {
 
 void sdrone_update_U_from_RC(sdrone_state_handle_t sdrone_state_handle) {
 	// Update U from RC
-	if( abs(sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL]) > 10) {
-		sdrone_state_handle->controller_state[X_POS].U[SDRONE_TETA_POS] =
-				sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL]
-						* SDRONE_NORM_ROLL_TO_RADIANS_FACTOR;
-	} else {
-		sdrone_state_handle->controller_state[X_POS].U[SDRONE_TETA_POS] = 0.0f;
-//				-sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.x*(ACC_CORRECTION_KE+(1.0f+((float)sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX1])/200.0f));
-	}
+	sdrone_state_handle->controller_state[X_POS].U[SDRONE_TETA_POS] =
+			sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL]
+					* SDRONE_NORM_ROLL_TO_RADIANS_FACTOR;
 
-	if( abs(sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH]) > 10) {
-		sdrone_state_handle->controller_state[Y_POS].U[SDRONE_TETA_POS] =
-				sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH]
-						* SDRONE_NORM_PITCH_TO_RADIANS_FACTOR;
-	} else {
-		sdrone_state_handle->controller_state[Y_POS].U[SDRONE_TETA_POS] = 0.0f;
-//				-sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.y*(ACC_CORRECTION_KE+(1.0f+((float)sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX1])/200.0f));
-	}
+	sdrone_state_handle->controller_state[Y_POS].U[SDRONE_TETA_POS] =
+			sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH]
+					* SDRONE_NORM_PITCH_TO_RADIANS_FACTOR;
 
-	if( abs(sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW]) > 10) {
-	 	sdrone_state_handle->controller_state[Z_POS].U[SDRONE_TETA_POS] =
+	if (abs(sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW]) > 10) {
+		sdrone_state_handle->controller_state[Z_POS].U[SDRONE_TETA_POS] =
 				sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW]
 						* SDRONE_NORM_YAW_TO_RADIANS_FACTOR;
 	} else {
-	 	sdrone_state_handle->controller_state[Z_POS].U[SDRONE_TETA_POS] = 0.0f;
+		sdrone_state_handle->controller_state[Z_POS].U[SDRONE_TETA_POS] = 0.0f;
 	}
 
 	sdrone_state_handle->controller_state[X_POS].U[SDRONE_THRUST_POS] = 0.0f;
