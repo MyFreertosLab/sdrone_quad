@@ -12,6 +12,7 @@
 #include <ina3221.h>
 
 #define MOTORS_INA3221_I2C_PORT 1
+#define SDRONE_MOTORS_THRUST_MS_FACTOR (9.80665f/2.31f)
 
 typedef enum {
 	MOTORS_TXRX_IGNORE = 0,

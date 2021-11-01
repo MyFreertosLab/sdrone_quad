@@ -18,42 +18,72 @@ void sdrone_telemetry_task(void *arg) {
 	sdrone_telemetry_task_state_handle_t sdrone_telemetry_handle =
 			(sdrone_telemetry_task_state_handle_t) arg;
 	sdrone_telemetry_handle_t telemetry_handle = &sdrone_telemetry_handle->telemetry_state;
+	uint8_t message_num = 0;
 
 	// init telemetry system
 	sdrone_telemetry_init(telemetry_handle);
-
+	printf("SDRONE_TELEMETRY SIZE: %d\n", sizeof(sdrone_telemetry_handle->telemetry_state.data));
     while(true) {
     	while(sdrone_telemetry_handle->telemetry_state.server == NULL) {
     	    vTaskDelay(pdMS_TO_TICKS(10000));
     	}
+    	message_num %= NUM_MESSAGES;
+    	message_num++;
 
+    	memset(&sdrone_telemetry_handle->telemetry_state.data, 0, sizeof(sdrone_telemetry_handle->telemetry_state.data));
     	// prepare data
-    	sdrone_telemetry_handle->telemetry_state.data.acc_x  = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.accel.cal.kalman[X_POS].X/(float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.accel.lsb;
-    	sdrone_telemetry_handle->telemetry_state.data.acc_y  = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.accel.cal.kalman[Y_POS].X/(float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.accel.lsb;
-    	sdrone_telemetry_handle->telemetry_state.data.acc_z  = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.accel.cal.kalman[Z_POS].X/(float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.accel.lsb;
-    	sdrone_telemetry_handle->telemetry_state.data.roll = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.x;
-    	sdrone_telemetry_handle->telemetry_state.data.pitch = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.y;
-    	sdrone_telemetry_handle->telemetry_state.data.yaw = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.z;
-    	sdrone_telemetry_handle->telemetry_state.data.rc_throttle = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE];
-    	sdrone_telemetry_handle->telemetry_state.data.rc_roll = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL];
-    	sdrone_telemetry_handle->telemetry_state.data.rc_pitch = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH];
-    	sdrone_telemetry_handle->telemetry_state.data.rc_yaw = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW];
-    	sdrone_telemetry_handle->telemetry_state.data.rc_aux1 = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX1];
-    	sdrone_telemetry_handle->telemetry_state.data.rc_aux2 = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX2];
-    	sdrone_telemetry_handle->telemetry_state.data.w_x = sdrone_telemetry_handle->sdrone_state_handle->controller_state[X_POS].W[SDRONE_TETA_POS];
-    	sdrone_telemetry_handle->telemetry_state.data.w_y = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Y_POS].W[SDRONE_TETA_POS];
-    	sdrone_telemetry_handle->telemetry_state.data.w_z = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].W[SDRONE_TETA_POS];
-    	sdrone_telemetry_handle->telemetry_state.data.w_thrust = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].U[SDRONE_THRUST_POS];
-    	sdrone_telemetry_handle->telemetry_state.data.ax_x = sdrone_telemetry_handle->sdrone_state_handle->motors_state.input.data.at[X_POS];
-    	sdrone_telemetry_handle->telemetry_state.data.ax_y = sdrone_telemetry_handle->sdrone_state_handle->motors_state.input.data.at[Y_POS];
-    	sdrone_telemetry_handle->telemetry_state.data.ax_z = sdrone_telemetry_handle->sdrone_state_handle->motors_state.input.data.at[Z_POS];
-    	sdrone_telemetry_handle->telemetry_state.data.ax_thrust = sdrone_telemetry_handle->sdrone_state_handle->motors_state.input.data.thrust;
+    	switch(message_num) {
+    	case MESSAGE_RC: {
+        	sdrone_telemetry_handle->telemetry_state.data.rc.throttle = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE];
+        	sdrone_telemetry_handle->telemetry_state.data.rc.roll = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL];
+        	sdrone_telemetry_handle->telemetry_state.data.rc.pitch = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH];
+        	sdrone_telemetry_handle->telemetry_state.data.rc.yaw = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW];
+        	sdrone_telemetry_handle->telemetry_state.data.rc.aux1 = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX1];
+        	sdrone_telemetry_handle->telemetry_state.data.rc.aux2 = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX2];
+    		break;
+    	}
+    	case MESSAGE_RPY: {
+        	sdrone_telemetry_handle->telemetry_state.data.rpy.roll = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.x;
+        	sdrone_telemetry_handle->telemetry_state.data.rpy.pitch = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.y;
+        	sdrone_telemetry_handle->telemetry_state.data.rpy.yaw = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.z;
+    		break;
+    	}
+    	case MESSAGE_ACC: {
+            sdrone_telemetry_handle->telemetry_state.data.acc.x  = sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.accel.mss.array[X_POS];
+            sdrone_telemetry_handle->telemetry_state.data.acc.y  = sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.accel.mss.array[Y_POS];
+            sdrone_telemetry_handle->telemetry_state.data.acc.z  = sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.accel.mss.array[Z_POS];
+    		break;
+    	}
+    	case MESSAGE_W: {
+        	sdrone_telemetry_handle->telemetry_state.data.w.x = sdrone_telemetry_handle->sdrone_state_handle->controller_state[X_POS].W[SDRONE_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.w.y = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Y_POS].W[SDRONE_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.w.z = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].W[SDRONE_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.w.thrust = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].U[SDRONE_THRUST_POS];
+    		break;
+    	}
+    	case MESSAGE_AXIS: {
+        	sdrone_telemetry_handle->telemetry_state.data.axis.x = sdrone_telemetry_handle->sdrone_state_handle->motors_state.input.data.at[X_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.axis.y = sdrone_telemetry_handle->sdrone_state_handle->motors_state.input.data.at[Y_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.axis.z = sdrone_telemetry_handle->sdrone_state_handle->motors_state.input.data.at[Z_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.axis.thrust = sdrone_telemetry_handle->sdrone_state_handle->motors_state.motors.thrust_ms;
+    		break;
+    	}
+    	case MESSAGE_GRAVITY: {
+        	sdrone_telemetry_handle->telemetry_state.data.gravity.x = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.attitude[X_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.gravity.y = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.attitude[Y_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.gravity.z = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.attitude[Z_POS];
+    		break;
+    	}
+    	}
 
     	// send data
+		sdrone_telemetry_handle->telemetry_state.data.m_type = message_num;
+		sdrone_telemetry_handle->telemetry_state.data.m_timestamp = sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.timestamp;
     	sdrone_telemetry_send_data(telemetry_handle);
 
     	// wait some time
-	    vTaskDelay(pdMS_TO_TICKS(100));
+	    vTaskDelay(pdMS_TO_TICKS(10));
+
     }
 	vTaskDelete(NULL);
 

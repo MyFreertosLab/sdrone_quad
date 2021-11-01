@@ -70,6 +70,7 @@ void sdrone_motors_controller_cycle(
 					motors_handle->at[i] = sdrone_motors_state_handle->input.data.at[i];
 				}
 				motors_handle->thrust = sdrone_motors_state_handle->input.data.thrust;
+				motors_handle->thrust_ms = motors_handle->thrust*SDRONE_MOTORS_THRUST_MS_FACTOR; // somma thrust motori (thrust*num_motors) espressa in m/s^2
 
 			  ESP_ERROR_CHECK(motors_update(motors_handle));
 				sdrone_motors_state_handle->input.data.tx_rx_flag =

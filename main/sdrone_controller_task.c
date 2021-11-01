@@ -20,15 +20,17 @@ void sdrone_controller_init(sdrone_state_handle_t sdrone_state_handle) {
 	memset(sdrone_state_handle, 0, sizeof(*sdrone_state_handle));
 	sdrone_state_handle->driver_id = (uint32_t) SDRONE_CONTROLLER_DRIVER_ID;
 	for (uint8_t i = 0; i < 3; i++) {
-		sdrone_state_handle->controller_state[i].ke = SDRONE_KE;
-		sdrone_state_handle->controller_state[i].ki = SDRONE_KI;
 		sdrone_state_handle->controller_state[i].prevErr = 0.0f;
 		sdrone_state_handle->controller_state[i].W[SDRONE_THRUST_POS] = 0.0f;
 		sdrone_state_handle->controller_state[i].W[SDRONE_TETA_POS] = 0.0f;
 		sdrone_state_handle->controller_state[i].Y = 0.0f;
 	}
+	sdrone_state_handle->controller_state[X_POS].ke = SDRONE_KE_ROLL;
+	sdrone_state_handle->controller_state[X_POS].ki = SDRONE_KI_ROLL;
+	sdrone_state_handle->controller_state[Y_POS].ke = SDRONE_KE_PITCH;
+	sdrone_state_handle->controller_state[Y_POS].ki = SDRONE_KI_PITCH;
 	sdrone_state_handle->controller_state[Z_POS].ke = SDRONE_KE_Z;
-	sdrone_state_handle->controller_state[Z_POS].ki = 0.0f;
+	sdrone_state_handle->controller_state[Z_POS].ki = SDRONE_KI_Z;
 }
 
 void sdrone_controller_print_data(sdrone_state_handle_t sdrone_state_handle) {
@@ -52,12 +54,10 @@ void sdrone_update_X_from_IMU(sdrone_state_handle_t sdrone_state_handle) {
 void sdrone_update_U_from_RC(sdrone_state_handle_t sdrone_state_handle) {
 	// Update U from RC
 	sdrone_state_handle->controller_state[X_POS].U[SDRONE_TETA_POS] =
-			sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL]
-					* SDRONE_NORM_ROLL_TO_RADIANS_FACTOR;
+			sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL] * SDRONE_NORM_ROLL_TO_RADIANS_FACTOR;
 
 	sdrone_state_handle->controller_state[Y_POS].U[SDRONE_TETA_POS] =
-			sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH]
-					* SDRONE_NORM_PITCH_TO_RADIANS_FACTOR;
+			sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH] * SDRONE_NORM_PITCH_TO_RADIANS_FACTOR;
 
 	if (abs(sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW]) > 10) {
 		sdrone_state_handle->controller_state[Z_POS].U[SDRONE_TETA_POS] =
