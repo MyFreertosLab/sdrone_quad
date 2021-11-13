@@ -12,6 +12,14 @@ class TelemetryData(ctypes.Structure):
         ("dummy", ctypes.c_byte),
     ]
 
+class TelemetryDataf(ctypes.Structure):
+    _fields_ = [
+        ("type", ctypes.c_ushort),
+        ("dummy", ctypes.c_short),
+        ("timestamp", ctypes.c_uint),
+        ("v", ctypes.c_float),
+    ]
+
 class TelemetryData3Df(ctypes.Structure):
     _fields_ = [
         ("type", ctypes.c_ushort),
@@ -83,6 +91,13 @@ def gravity(x, resp):
   k.type, k.dummy, k.timestamp, k.x, k.y,k.z = struct.unpack(fmt, resp[:fmt_size])
   print("gr.: [{:d} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z))
 
+def vertical_v(x, resp):
+  fmt = "<hhIf"
+  fmt_size = struct.calcsize(fmt)
+  k = TelemetryDataf();
+  k.type, k.dummy, k.timestamp, k.v = struct.unpack(fmt, resp[:fmt_size])
+  print("vv.: [{:d} {:f}]".format(k.timestamp, k.v))
+
 async def sdrone():
 #  try:
     async with websockets.connect("ws://192.168.4.1:80/ws", ping_interval=300, ping_timeout=300) as websocket:
@@ -98,6 +113,7 @@ async def sdrone():
             4: w,
             5: axis,
             6: gravity,
+            7: vertical_v,
           }
           fmt = "<h18s"
           fmt_size = struct.calcsize(fmt)

@@ -59,6 +59,7 @@ void sdrone_update_U_from_RC(sdrone_state_handle_t sdrone_state_handle) {
 	sdrone_state_handle->controller_state[Y_POS].U[SDRONE_TETA_POS] =
 			sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH] * SDRONE_NORM_PITCH_TO_RADIANS_FACTOR;
 
+	// FIXME: Convert RC_YAW for angular speed (not angle)
 	if (abs(sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW]) > 10) {
 		sdrone_state_handle->controller_state[Z_POS].U[SDRONE_TETA_POS] =
 				sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW]
@@ -67,12 +68,14 @@ void sdrone_update_U_from_RC(sdrone_state_handle_t sdrone_state_handle) {
 		sdrone_state_handle->controller_state[Z_POS].U[SDRONE_TETA_POS] = 0.0f;
 	}
 
+	// thrust on Z axis body frame
 	sdrone_state_handle->controller_state[X_POS].U[SDRONE_THRUST_POS] = 0.0f;
 	sdrone_state_handle->controller_state[Y_POS].U[SDRONE_THRUST_POS] = 0.0f;
 	sdrone_state_handle->controller_state[Z_POS].U[SDRONE_THRUST_POS] =
-			sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE]
+			(sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE] + SDRONE_RC_CHANNEL_NORM_MAX)
 					* SDRONE_NORM_THROTTLE_TO_ACCEL_FACTOR;
 }
+
 void sdrone_update_error(sdrone_state_handle_t sdrone_state_handle) {
 	// Calc error (predX(prev) - X(actual))
 	for (uint8_t i = 0; i < 3; i++) {
@@ -120,16 +123,16 @@ void sdrone_update_W_from_U_and_X(sdrone_state_handle_t sdrone_state_handle) {
 		}
 	}
 
-	counter++;
-	counter %= 500;
+//	counter++;
+//	counter %= 500;
 //	if (counter == 0) {
 //		printf("RC: [%d,%d,%d,%d,%d,%d]\n",
 //				sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL],
 //				sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH],
 //				sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW],
 //				sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE],
-//				sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX1],
-//				sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX2]);
+//				sdrone_state_handle->rc_state.rc_data.data.norm[RC_SWA],
+//				sdrone_state_handle->rc_state.rc_data.data.norm[RC_SWB]);
 //		printf("U: [%5.5f,%5.5f,%5.5f,%5.5f]\n",
 //				sdrone_state_handle->controller_state[0].U[SDRONE_TETA_POS],
 //				sdrone_state_handle->controller_state[1].U[SDRONE_TETA_POS],
@@ -241,24 +244,52 @@ esp_err_t sdrone_send_motors_notification(sdrone_state_handle_t sdrone_state_han
 	}
 	return ESP_OK;
 }
+
+esp_err_t sdrone_disarm_motors(sdrone_state_handle_t sdrone_state_handle) {
+	sdrone_state_handle->motors_state.input.isCommand = true;
+	sdrone_state_handle->motors_state.input.command.type = MOTORS_DISARM;
+	ESP_ERROR_CHECK(sdrone_send_motors_notification(sdrone_state_handle));
+	return ESP_OK;
+}
+
+esp_err_t sdrone_arm_motors(sdrone_state_handle_t sdrone_state_handle) {
+	sdrone_state_handle->motors_state.input.isCommand = true;
+	sdrone_state_handle->motors_state.input.command.type = MOTORS_ARM;
+	ESP_ERROR_CHECK(sdrone_send_motors_notification(sdrone_state_handle));
+	return ESP_OK;
+}
+
+bool sdrone_motors_are_armed(sdrone_state_handle_t sdrone_state_handle) {
+	return (sdrone_state_handle->motors_state.motors.status == MOTORS_ARMED);
+}
+
+bool sdrone_motors_are_disarmed(sdrone_state_handle_t sdrone_state_handle) {
+	return (sdrone_state_handle->motors_state.motors.status == MOTORS_DISARMED);
+}
+
 esp_err_t sdrone_eval_rc_gesture(sdrone_state_handle_t sdrone_state_handle) {
-	if(sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE] <= 2) {
-		if(sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH] <= -160) {
-			sdrone_state_handle->motors_state.input.isCommand = true;
-			sdrone_state_handle->motors_state.input.command.type = MOTORS_DISARM;
-			ESP_ERROR_CHECK(sdrone_send_motors_notification(sdrone_state_handle));
-		} else if(sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH] >= 160) {
-			sdrone_state_handle->motors_state.input.isCommand = true;
-			sdrone_state_handle->motors_state.input.command.type = MOTORS_ARM;
-			ESP_ERROR_CHECK(sdrone_send_motors_notification(sdrone_state_handle));
-		}
+	// connection control
+	if(sdrone_state_handle->rc_state.rc_data.state == RC_NOT_CONNECTED) {
+		ESP_ERROR_CHECK(sdrone_disarm_motors(sdrone_state_handle));
+		return ESP_OK;
+	}
+	// arm/disarm control
+	if(sdrone_motors_are_disarmed(sdrone_state_handle) &&
+	   sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE] <= (SDRONE_RC_CHANNEL_NORM_MIN +10) &&
+	   sdrone_state_handle->rc_state.rc_data.data.norm[RC_SWA] >= (SDRONE_RC_CHANNEL_NORM_MAX -10)) {
+		ESP_ERROR_CHECK(sdrone_arm_motors(sdrone_state_handle));
+	} else if(sdrone_motors_are_armed(sdrone_state_handle) &&
+			  sdrone_state_handle->rc_state.rc_data.data.norm[RC_SWA] <= (SDRONE_RC_CHANNEL_NORM_MIN +10)) {
+		ESP_ERROR_CHECK(sdrone_disarm_motors(sdrone_state_handle));
 	}
 	return ESP_OK;
 }
+
 void sdrone_controller_cycle(sdrone_state_handle_t sdrone_state_handle) {
 	rc_data_t rc_data;
-
 	mpu9250_data_t imu_data;
+
+	// wait for start signal (from main)
 	while (true) {
 		if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(100)) == pdPASS) {
 			memcpy(&rc_data, &sdrone_state_handle->rc_state.rc_data.data,
@@ -270,9 +301,11 @@ void sdrone_controller_cycle(sdrone_state_handle_t sdrone_state_handle) {
 			printf("wait for initialization complete ...\n");
 		}
 	}
-	uint16_t skip_counter = 5000;
+
+	int16_t skip_counter = 5000;
 	while (true) {
 		if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(100)) != 0) {
+			// RC
 			if (sdrone_state_handle->rc_state.rc_data.data.txrx_signal
 					== RC_TXRX_TRANSMITTED) {
 				memcpy(&rc_data, &sdrone_state_handle->rc_state.rc_data.data,
@@ -281,19 +314,21 @@ void sdrone_controller_cycle(sdrone_state_handle_t sdrone_state_handle) {
 						RC_TXRX_RECEIVED;
 				ESP_ERROR_CHECK(sdrone_eval_rc_gesture(sdrone_state_handle));
 			}
+
+			// IMU
 			if (sdrone_state_handle->imu_state.imu.data.txrx_signal
 					== IMU_TXRX_TRANSMITTED) {
 				memcpy(&imu_data, &sdrone_state_handle->imu_state.imu.data,
 						sizeof(imu_data));
 				sdrone_state_handle->imu_state.imu.data.txrx_signal =
 						IMU_TXRX_RECEIVED;
-				if (skip_counter > 0) {
-					skip_counter--;
-				} else {
 
+				if (skip_counter <= 0) {
 					ESP_ERROR_CHECK(sdrone_controller_control(sdrone_state_handle));
 					sdrone_state_handle->motors_state.input.isCommand = false;
 					ESP_ERROR_CHECK(sdrone_send_motors_notification(sdrone_state_handle));
+				} else {
+					skip_counter--;
 				}
 			}
 		} else {

@@ -1,20 +1,23 @@
 echo RC='['
-cat trace-manual.txt|grep rc|sed -e 's/^rc..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+cat trace-volo-11.txt|grep rc|sed -e 's/^rc..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
 echo RPY='['
-cat trace-manual.txt|grep rpy|sed -e 's/^rpy..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+cat trace-volo-11.txt|grep rpy|sed -e 's/^rpy..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
 echo ACC='['
-cat trace-manual.txt|grep acc|sed -e 's/^acc..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+cat trace-volo-11.txt|grep acc|sed -e 's/^acc..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
 echo GR='['
-cat trace-manual.txt|grep gr|sed -e 's/^gr..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+cat trace-volo-11.txt|grep gr|sed -e 's/^gr..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
 echo AX='['
-cat trace-manual.txt|grep ax|sed -e 's/^ax..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+cat trace-volo-11.txt|grep ax|sed -e 's/^ax..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
 echo W='['
-cat trace-manual.txt|grep w|sed -e 's/^w..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+cat trace-volo-11.txt|grep w|sed -e 's/^w..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+echo '];'
+echo VV='['
+cat trace-volo-11.txt|grep vv|sed -e 's/^vv..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
 cat <<EOF
 RC_THRUST=RC(1:size(RC,1),2);
@@ -45,6 +48,8 @@ RPY_X=RPY(1:size(RPY,1),2);
 RPY_Y=RPY(1:size(RPY,1),3);
 RPY_Z=RPY(1:size(RPY,1),4);
 
+VV_V=VV(1:size(VV,1),2);
+
 function plotRC();
   subplot(231);
   //scf();
@@ -72,6 +77,13 @@ function plotW();
   plot(W_Y,"color", "red");
   plot(W_Z,"color", "black");
   xtitle("W")
+endfunction
+
+function plotVV();
+  subplot(233);
+  //scf();
+  plot(VV_V, "color", "black");
+  xtitle("Vertical Speed")
 endfunction
 
 function plotAX();
@@ -170,7 +182,8 @@ endfunction
 
 plotRC();
 plotACC();
-plotW();
+//plotW();
+plotVV();
 plotAX();
 plotGR();
 plotRPY();

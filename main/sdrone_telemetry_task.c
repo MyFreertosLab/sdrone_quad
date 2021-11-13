@@ -38,8 +38,8 @@ void sdrone_telemetry_task(void *arg) {
         	sdrone_telemetry_handle->telemetry_state.data.rc.roll = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL];
         	sdrone_telemetry_handle->telemetry_state.data.rc.pitch = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH];
         	sdrone_telemetry_handle->telemetry_state.data.rc.yaw = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW];
-        	sdrone_telemetry_handle->telemetry_state.data.rc.aux1 = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX1];
-        	sdrone_telemetry_handle->telemetry_state.data.rc.aux2 = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_AUX2];
+        	sdrone_telemetry_handle->telemetry_state.data.rc.aux1 = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_SWA];
+        	sdrone_telemetry_handle->telemetry_state.data.rc.aux2 = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_SWB];
     		break;
     	}
     	case MESSAGE_RPY: {
@@ -49,9 +49,9 @@ void sdrone_telemetry_task(void *arg) {
     		break;
     	}
     	case MESSAGE_ACC: {
-            sdrone_telemetry_handle->telemetry_state.data.acc.x  = sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.accel.mss.array[X_POS];
-            sdrone_telemetry_handle->telemetry_state.data.acc.y  = sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.accel.mss.array[Y_POS];
-            sdrone_telemetry_handle->telemetry_state.data.acc.z  = sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.accel.mss.array[Z_POS];
+            sdrone_telemetry_handle->telemetry_state.data.acc.x  = sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.accel_without_g_if[X_POS];
+            sdrone_telemetry_handle->telemetry_state.data.acc.y  = sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.accel_without_g_if[Y_POS];
+            sdrone_telemetry_handle->telemetry_state.data.acc.z  = sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.accel_without_g_if[Z_POS];
     		break;
     	}
     	case MESSAGE_W: {
@@ -59,6 +59,10 @@ void sdrone_telemetry_task(void *arg) {
         	sdrone_telemetry_handle->telemetry_state.data.w.y = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Y_POS].W[SDRONE_TETA_POS];
         	sdrone_telemetry_handle->telemetry_state.data.w.z = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].W[SDRONE_TETA_POS];
         	sdrone_telemetry_handle->telemetry_state.data.w.thrust = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].U[SDRONE_THRUST_POS];
+    		break;
+    	}
+    	case MESSAGE_V: {
+        	sdrone_telemetry_handle->telemetry_state.data.vertical_v = sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.vertical_v;
     		break;
     	}
     	case MESSAGE_AXIS: {

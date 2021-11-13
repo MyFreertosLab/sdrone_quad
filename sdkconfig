@@ -126,13 +126,25 @@ CONFIG_PARTITION_TABLE_MD5=y
 # end of Partition Table
 
 #
-# Example Configuration
+# Sdrone Configuration
+#
+
+#
+# Wifi Configuration
 #
 CONFIG_ESP_WIFI_SSID="sdronequad"
 CONFIG_ESP_WIFI_PASSWORD="GqZO4QZGzdd8oUNadELrijWERlkeJP"
 CONFIG_ESP_WIFI_CHANNEL=12
 CONFIG_ESP_MAX_STA_CONN=4
-# end of Example Configuration
+# end of Wifi Configuration
+
+#
+# RC Configuration
+#
+CONFIG_ESP_RC_PROTOCOL_IBUS=y
+# CONFIG_ESP_RC_PROTOCOL_PPM is not set
+# end of RC Configuration
+# end of Sdrone Configuration
 
 #
 # Compiler options
