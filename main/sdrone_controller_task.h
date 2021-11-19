@@ -40,10 +40,13 @@
 #define SDRONE_AXIS_LENGTH 0.20f
 #define SDRONE_MASS 1.28f
 
-#define SDRONE_TETA_POS    0
-#define SDRONE_OMEGA_POS   1
-#define SDRONE_ALFA_POS    2
-#define SDRONE_THRUST_POS  1
+#define SDRONE_TETA_POS      0
+#define SDRONE_OMEGA_POS     1
+#define SDRONE_ALFA_POS      2
+#define SDRONE_UW_THRUST_POS 1
+#define SDRONE_X_THRUST_POS  3
+#define SDRONE_Y_TORQUE_POS  0
+#define SDRONE_Y_THRUST_POS  1
 
 #define SDRONE_AXIS_X_POS    0
 #define SDRONE_AXIS_Y_POS    1
@@ -76,13 +79,14 @@ typedef enum {
 	SDRONE_TELEMETRY_DRIVER_ID
 } sdrone_drivers_id;
 typedef struct {
-	float X[3]; // [teta, omega, alfa] (radians)
+	float X[4]; // [teta, omega, alfa, thrust] (radians, newton)
 	float U[2]; // [teta, thrust] (radians, newton)
 	float W[2]; // [dteta,dtrust] (radians, newton)
-	float Y; // (newton)
+	float Y[2]; // [torque, thrust](newton)
 	float err;
 	float ierr;
-	float predX[3]; // [teta, omega, alfa] (radians)
+	float err_thrust;
+	float predX[4]; // [teta, omega, alfa, thrust] (radians, newton)
 	float ke;
 	float ki;
 	float prevErr; // previous error

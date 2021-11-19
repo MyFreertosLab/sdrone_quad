@@ -13,8 +13,14 @@ echo '];'
 echo AX='['
 cat trace-volo-11.txt|grep ax|sed -e 's/^ax..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
+echo X='['
+cat trace-volo-11.txt|grep x|sed -e 's/^x..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+echo U='['
+cat trace-volo-11.txt|grep u|sed -e 's/^u..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo W='['
 cat trace-volo-11.txt|grep w|sed -e 's/^w..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+echo Y='['
+cat trace-volo-11.txt|grep y|sed -e 's/^y..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
 echo VV='['
 cat trace-volo-11.txt|grep vv|sed -e 's/^vv..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
@@ -29,10 +35,25 @@ ACC_X=ACC(1:size(ACC,1),2);
 ACC_Y=ACC(1:size(ACC,1),3);
 ACC_Z=ACC(1:size(ACC,1),4);
 
+X_X=X(1:size(X,1),2);
+X_Y=X(1:size(X,1),3);
+X_Z=X(1:size(X,1),4);
+X_THRUST=X(1:size(W,1),5);
+
+U_X=U(1:size(U,1),2);
+U_Y=U(1:size(U,1),3);
+U_Z=U(1:size(U,1),4);
+U_THRUST=U(1:size(U,1),5);
+
 W_X=W(1:size(W,1),2);
 W_Y=W(1:size(W,1),3);
 W_Z=W(1:size(W,1),4);
 W_THRUST=W(1:size(W,1),5);
+
+Y_X=Y(1:size(Y,1),2);
+Y_Y=Y(1:size(Y,1),3);
+Y_Z=Y(1:size(Y,1),4);
+Y_THRUST=Y(1:size(Y,1),5);
 
 AX_X=AX(1:size(AX,1),2);
 AX_Y=AX(1:size(AX,1),4);

@@ -54,11 +54,32 @@ void sdrone_telemetry_task(void *arg) {
             sdrone_telemetry_handle->telemetry_state.data.acc.z  = sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.accel_without_g_if[Z_POS];
     		break;
     	}
+    	case MESSAGE_X: {
+        	sdrone_telemetry_handle->telemetry_state.data.x.x = sdrone_telemetry_handle->sdrone_state_handle->controller_state[X_POS].X[SDRONE_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.x.y = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Y_POS].X[SDRONE_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.x.z = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].X[SDRONE_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.x.thrust = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].X[SDRONE_X_THRUST_POS];
+    		break;
+    	}
+    	case MESSAGE_U: {
+        	sdrone_telemetry_handle->telemetry_state.data.u.x = sdrone_telemetry_handle->sdrone_state_handle->controller_state[X_POS].U[SDRONE_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.u.y = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Y_POS].U[SDRONE_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.u.z = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].U[SDRONE_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.u.thrust = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].U[SDRONE_UW_THRUST_POS];
+    		break;
+    	}
     	case MESSAGE_W: {
         	sdrone_telemetry_handle->telemetry_state.data.w.x = sdrone_telemetry_handle->sdrone_state_handle->controller_state[X_POS].W[SDRONE_TETA_POS];
         	sdrone_telemetry_handle->telemetry_state.data.w.y = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Y_POS].W[SDRONE_TETA_POS];
         	sdrone_telemetry_handle->telemetry_state.data.w.z = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].W[SDRONE_TETA_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.w.thrust = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].U[SDRONE_THRUST_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.w.thrust = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].W[SDRONE_UW_THRUST_POS];
+    		break;
+    	}
+    	case MESSAGE_Y: {
+        	sdrone_telemetry_handle->telemetry_state.data.y.x = sdrone_telemetry_handle->sdrone_state_handle->controller_state[X_POS].Y[SDRONE_Y_TORQUE_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.y.y = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Y_POS].Y[SDRONE_Y_TORQUE_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.y.z = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].Y[SDRONE_Y_TORQUE_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.y.thrust = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].Y[SDRONE_Y_THRUST_POS];
     		break;
     	}
     	case MESSAGE_V: {
@@ -73,9 +94,9 @@ void sdrone_telemetry_task(void *arg) {
     		break;
     	}
     	case MESSAGE_GRAVITY: {
-        	sdrone_telemetry_handle->telemetry_state.data.gravity.x = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.attitude[X_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.gravity.y = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.attitude[Y_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.gravity.z = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.attitude[Z_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.gravity.x = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.gravity_bf[X_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.gravity.y = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.gravity_bf[Y_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.gravity.z = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.gravity_bf[Z_POS];
     		break;
     	}
     	}

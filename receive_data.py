@@ -72,12 +72,30 @@ def acc(x, resp):
   k = TelemetryData3Df();
   k.type, k.dummy, k.timestamp, k.x, k.y,k.z = struct.unpack(fmt, resp[:fmt_size])
   print("acc: [{:d} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z))
+def x(data, resp):
+  fmt = "<hhIffff"
+  fmt_size = struct.calcsize(fmt)
+  k = TelemetryData4Df();
+  k.type, k.dummy, k.timestamp, k.x, k.y,k.z,k.t = struct.unpack(fmt, resp[:fmt_size])
+  print("x..: [{:d} {:f} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z, k.t))
+def u(x, resp):
+  fmt = "<hhIffff"
+  fmt_size = struct.calcsize(fmt)
+  k = TelemetryData4Df();
+  k.type, k.dummy, k.timestamp, k.x, k.y,k.z,k.t = struct.unpack(fmt, resp[:fmt_size])
+  print("u..: [{:d} {:f} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z, k.t))
 def w(x, resp):
   fmt = "<hhIffff"
   fmt_size = struct.calcsize(fmt)
   k = TelemetryData4Df();
   k.type, k.dummy, k.timestamp, k.x, k.y,k.z,k.t = struct.unpack(fmt, resp[:fmt_size])
   print("w..: [{:d} {:f} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z, k.t))
+def y(x, resp):
+  fmt = "<hhIffff"
+  fmt_size = struct.calcsize(fmt)
+  k = TelemetryData4Df();
+  k.type, k.dummy, k.timestamp, k.x, k.y,k.z,k.t = struct.unpack(fmt, resp[:fmt_size])
+  print("y..: [{:d} {:f} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z, k.t))
 def axis(x, resp):
   fmt = "<hhIffff"
   fmt_size = struct.calcsize(fmt)
@@ -105,7 +123,7 @@ async def sdrone():
         await websocket.send("Hello world!")
         while True:
           resp = await websocket.recv()
-          x = TelemetryData()
+          data = TelemetryData()
           options = {
             1: rc,
             2: rpy,
@@ -114,12 +132,15 @@ async def sdrone():
             5: axis,
             6: gravity,
             7: vertical_v,
+            8: x,
+            9: u,
+            10: y,
           }
           fmt = "<h18s"
           fmt_size = struct.calcsize(fmt)
           temp = "";
-          x.type, temp = struct.unpack(fmt, resp[:fmt_size])
-          options[x.type](x, resp);
+          data.type, temp = struct.unpack(fmt, resp[:fmt_size])
+          options[data.type](data, resp);
         await websocket.close()
 #  except:
 #     print("Exception received");
