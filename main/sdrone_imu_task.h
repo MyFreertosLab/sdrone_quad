@@ -9,7 +9,7 @@
 #define MAIN_SDRONE_IMU_TASK_H_
 
 #include <mpu9250.h>
-
+#define SDRONE_IMU_INIT_CYCLES 15000
 typedef struct {
 	uint32_t driver_id;
 	uint32_t controller_driver_id;

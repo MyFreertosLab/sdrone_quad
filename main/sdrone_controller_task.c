@@ -38,6 +38,14 @@ void sdrone_controller_print_data(sdrone_state_handle_t sdrone_state_handle) {
 	// T.B.D.
 }
 
+bool sdrone_motors_are_armed(sdrone_state_handle_t sdrone_state_handle) {
+	return (sdrone_state_handle->motors_state.motors.status == MOTORS_ARMED);
+}
+
+bool sdrone_motors_are_disarmed(sdrone_state_handle_t sdrone_state_handle) {
+	return (sdrone_state_handle->motors_state.motors.status == MOTORS_DISARMED);
+}
+
 void sdrone_update_X_from_IMU(sdrone_state_handle_t sdrone_state_handle) {
 	// Update X from IMU
 	for (uint8_t i = 0; i < 3; i++) {
@@ -81,7 +89,12 @@ void sdrone_update_error(sdrone_state_handle_t sdrone_state_handle) {
 		sdrone_state_handle->controller_state[i].err =
 				sdrone_state_handle->controller_state[i].predX[SDRONE_ALFA_POS]
 						- sdrone_state_handle->controller_state[i].X[SDRONE_ALFA_POS];
-		sdrone_state_handle->controller_state[i].ierr += sdrone_state_handle->controller_state[i].err;
+		if (sdrone_motors_are_armed(sdrone_state_handle)) {
+			sdrone_state_handle->controller_state[i].ierr +=
+					sdrone_state_handle->controller_state[i].err;
+		} else {
+			sdrone_state_handle->controller_state[i].ierr = 0.0f;
+		}
 		sdrone_state_handle->controller_state[i].err_thrust =
 				sdrone_state_handle->controller_state[i].predX[SDRONE_X_THRUST_POS]
 						- sdrone_state_handle->controller_state[i].X[SDRONE_X_THRUST_POS];
@@ -172,7 +185,7 @@ void sdrone_update_predX_from_W_and_X(sdrone_state_handle_t sdrone_state_handle)
 
 void sdrone_update_Y_from_predX(sdrone_state_handle_t sdrone_state_handle) {
 	// controller response
-	if(sdrone_state_handle->controller_state[Z_POS].W[SDRONE_UW_THRUST_POS] > 2.0f) {
+	if(sdrone_state_handle->controller_state[Z_POS].predX[SDRONE_X_THRUST_POS] > 2.0f) {
  	  for (uint8_t i = 0; i < 3; i++) {
   		sdrone_state_handle->controller_state[i].Y[SDRONE_Y_TORQUE_POS] =
 				(+SDRONE_AXIS_LENGTH
@@ -261,15 +274,6 @@ esp_err_t sdrone_arm_motors(sdrone_state_handle_t sdrone_state_handle) {
 	ESP_ERROR_CHECK(sdrone_send_motors_notification(sdrone_state_handle));
 	return ESP_OK;
 }
-
-bool sdrone_motors_are_armed(sdrone_state_handle_t sdrone_state_handle) {
-	return (sdrone_state_handle->motors_state.motors.status == MOTORS_ARMED);
-}
-
-bool sdrone_motors_are_disarmed(sdrone_state_handle_t sdrone_state_handle) {
-	return (sdrone_state_handle->motors_state.motors.status == MOTORS_DISARMED);
-}
-
 esp_err_t sdrone_eval_rc_gesture(sdrone_state_handle_t sdrone_state_handle) {
 	// connection control
 	if(sdrone_state_handle->rc_state.rc_data.state == RC_NOT_CONNECTED) {
@@ -305,7 +309,7 @@ void sdrone_controller_cycle(sdrone_state_handle_t sdrone_state_handle) {
 		}
 	}
 
-	int16_t skip_counter = 5000;
+	int16_t skip_counter = SDRONE_IMU_INIT_CYCLES;
 	while (true) {
 		if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(100)) != 0) {
 			// RC

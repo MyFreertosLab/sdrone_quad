@@ -38,14 +38,14 @@ void sdrone_imu_read_data_cycle(sdrone_imu_state_handle_t sdrone_imu_state_handl
 	mpu9250_handle_t mpu9250_handle = &imu_data_local;
 	memcpy(mpu9250_handle, &sdrone_imu_state_handle->imu, sizeof(*mpu9250_handle));
 	float vertical_acc_sum = 0.0f;
-	uint16_t calibration_sample = 5000;
+	uint16_t calibration_sample = SDRONE_IMU_INIT_CYCLES;
 	mpu9250_handle_t imu_data_handle = &sdrone_imu_state_handle->imu;
 	while (true) {
 		if( ulTaskNotifyTake( pdTRUE,pdMS_TO_TICKS(500) ) == pdTRUE) {
 			ESP_ERROR_CHECK(mpu9250_load_data(mpu9250_handle));
 			if (calibration_sample > 0) {
 				calibration_sample--;
-				vertical_acc_sum += mpu9250_handle->data.accel_without_g_if[Z_POS]/5000.0f;
+				vertical_acc_sum += mpu9250_handle->data.accel_without_g_if[Z_POS]/SDRONE_IMU_INIT_CYCLES;
 				if(calibration_sample == 0) {
 					mpu9250_handle->data.accel.acc_g_factor = -mpu9250_handle->data.gravity_bf[Z_POS]/(vertical_acc_sum + SDRONE_GRAVITY_ACCELERATION);
 					mpu9250_handle->data.acc_g_factor_initialized = 1;

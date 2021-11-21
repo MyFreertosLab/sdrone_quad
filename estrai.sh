@@ -1,29 +1,32 @@
 echo RC='['
-cat trace-volo-11.txt|grep rc|sed -e 's/^rc..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+cat trace-volo-12.txt|grep rc|sed -e 's/^rc..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
 echo RPY='['
-cat trace-volo-11.txt|grep rpy|sed -e 's/^rpy..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+cat trace-volo-12.txt|grep rpy|sed -e 's/^rpy..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
 echo ACC='['
-cat trace-volo-11.txt|grep acc|sed -e 's/^acc..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+cat trace-volo-12.txt|grep acc|sed -e 's/^acc..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
 echo GR='['
-cat trace-volo-11.txt|grep gr|sed -e 's/^gr..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+cat trace-volo-12.txt|grep gr|sed -e 's/^gr..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
 echo AX='['
-cat trace-volo-11.txt|grep ax|sed -e 's/^ax..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+cat trace-volo-12.txt|grep ax|sed -e 's/^ax..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
 echo X='['
-cat trace-volo-11.txt|grep x|sed -e 's/^x..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+cat trace-volo-12.txt|grep 'x\.\.'|sed -e 's/^x..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+echo '];'
 echo U='['
-cat trace-volo-11.txt|grep u|sed -e 's/^u..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+cat trace-volo-12.txt|grep u|sed -e 's/^u..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+echo '];'
 echo W='['
-cat trace-volo-11.txt|grep w|sed -e 's/^w..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+cat trace-volo-12.txt|grep w|sed -e 's/^w..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+echo '];'
 echo Y='['
-cat trace-volo-11.txt|grep y|sed -e 's/^y..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+cat trace-volo-12.txt|grep 'y\.\.'|sed -e 's/^y..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
 echo VV='['
-cat trace-volo-11.txt|grep vv|sed -e 's/^vv..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+cat trace-volo-12.txt|grep vv|sed -e 's/^vv..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
 cat <<EOF
 RC_THRUST=RC(1:size(RC,1),2);
@@ -53,7 +56,7 @@ W_THRUST=W(1:size(W,1),5);
 Y_X=Y(1:size(Y,1),2);
 Y_Y=Y(1:size(Y,1),3);
 Y_Z=Y(1:size(Y,1),4);
-Y_THRUST=Y(1:size(Y,1),5);
+Y_T=Y(1:size(Y,1),5);
 
 AX_X=AX(1:size(AX,1),2);
 AX_Y=AX(1:size(AX,1),4);
@@ -115,6 +118,16 @@ function plotAX();
   plot(AX_Z,"color", "black");
   plot(AX_T,"color", "black");
   xtitle("AX")
+endfunction
+
+function plotY();
+  subplot(234);
+  //scf();
+  plot(Y_X,"color", "red");
+  plot(Y_Y,"color", "blue");
+  plot(Y_Z,"color", "black");
+  plot(Y_T,"color", "black");
+  xtitle("Y")
 endfunction
 
 function plotGR();
@@ -205,7 +218,8 @@ plotRC();
 plotACC();
 //plotW();
 plotVV();
-plotAX();
+//plotAX();
+plotY();
 plotGR();
 plotRPY();
 plotACC_IF();
