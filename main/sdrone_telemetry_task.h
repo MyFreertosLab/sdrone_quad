@@ -11,6 +11,8 @@
 #include <telemetry.h>
 #include <sdrone_controller_task.h>
 
+#define VERTICAL_DATA_ONLY
+
 typedef struct {
 	uint32_t driver_id;
 	uint32_t controller_driver_id;

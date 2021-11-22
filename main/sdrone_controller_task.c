@@ -56,7 +56,7 @@ void sdrone_update_X_from_IMU(sdrone_state_handle_t sdrone_state_handle) {
 						/ (double) sdrone_state_handle->imu_state.imu.data.gyro.lsb
 						/ (double) 360.0f * (double) PI_2;
 		sdrone_state_handle->controller_state[i].X[SDRONE_ALFA_POS] = sdrone_state_handle->imu_state.imu.data.gyro.alfa[i];
-		sdrone_state_handle->controller_state[i].X[SDRONE_X_THRUST_POS] = (sdrone_state_handle->imu_state.imu.data.accel_without_g[i] - sdrone_state_handle->imu_state.imu.data.gravity_bf[i])*SDRONE_MASS/NUM_MOTORS;
+		sdrone_state_handle->controller_state[i].X[SDRONE_X_THRUST_POS] = (sdrone_state_handle->imu_state.imu.data.accel.mss.array[i])*SDRONE_MASS/NUM_MOTORS;
 	}
 }
 
@@ -80,7 +80,7 @@ void sdrone_update_U_from_RC(sdrone_state_handle_t sdrone_state_handle) {
 	// thrust requested is on Z axis body frame
 	sdrone_state_handle->controller_state[X_POS].U[SDRONE_UW_THRUST_POS] = 0.0f;
 	sdrone_state_handle->controller_state[Y_POS].U[SDRONE_UW_THRUST_POS] = 0.0f;
-	sdrone_state_handle->controller_state[Z_POS].U[SDRONE_UW_THRUST_POS] = (sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE] + SDRONE_RC_CHANNEL_NORM_MAX) * SDRONE_NORM_THROTTLE_TO_ACCEL_FACTOR;
+	sdrone_state_handle->controller_state[Z_POS].U[SDRONE_UW_THRUST_POS] = (sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE] + SDRONE_RC_CHANNEL_NORM_MAX) * SDRONE_NORM_THROTTLE_TO_ACCEL_FACTOR + SDRONE_MOTORS_RANGE_OFFSET;
 }
 
 void sdrone_update_error(sdrone_state_handle_t sdrone_state_handle) {

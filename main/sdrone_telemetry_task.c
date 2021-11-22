@@ -27,8 +27,12 @@ void sdrone_telemetry_task(void *arg) {
     	while(sdrone_telemetry_handle->telemetry_state.server == NULL) {
     	    vTaskDelay(pdMS_TO_TICKS(10000));
     	}
+#ifdef VERTICAL_DATA_ONLY
+    	message_num = MESSAGE_Z_DATA;
+#else
     	message_num %= NUM_MESSAGES;
     	message_num++;
+#endif
 
     	memset(&sdrone_telemetry_handle->telemetry_state.data, 0, sizeof(sdrone_telemetry_handle->telemetry_state.data));
     	// prepare data
@@ -97,6 +101,15 @@ void sdrone_telemetry_task(void *arg) {
         	sdrone_telemetry_handle->telemetry_state.data.gravity.x = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.gravity_bf[X_POS];
         	sdrone_telemetry_handle->telemetry_state.data.gravity.y = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.gravity_bf[Y_POS];
         	sdrone_telemetry_handle->telemetry_state.data.gravity.z = (float)sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.gravity_bf[Z_POS];
+    		break;
+    	}
+    	case MESSAGE_Z_DATA: {
+        	sdrone_telemetry_handle->telemetry_state.data.z_data.rc_t = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE];
+        	sdrone_telemetry_handle->telemetry_state.data.z_data.x_t = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].X[SDRONE_X_THRUST_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.z_data.u_t = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].U[SDRONE_UW_THRUST_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.z_data.w_t = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].W[SDRONE_UW_THRUST_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.z_data.y_t = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].Y[SDRONE_Y_THRUST_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.z_data.vertical_v = sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.vertical_v;
     		break;
     	}
     	}

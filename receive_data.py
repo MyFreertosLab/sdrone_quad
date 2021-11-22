@@ -44,8 +44,8 @@ class TelemetryData4Df(ctypes.Structure):
 class TelemetryDataRc(ctypes.Structure):
     _fields_ = [
         ("type", ctypes.c_ushort),
-        ("timestamp", ctypes.c_uint),
         ("dummy", ctypes.c_short),
+        ("timestamp", ctypes.c_uint),
         ("throttle", ctypes.c_short),
         ("roll", ctypes.c_short),
         ("pitch", ctypes.c_short),
@@ -54,6 +54,26 @@ class TelemetryDataRc(ctypes.Structure):
         ("aux2", ctypes.c_short),
     ]
 
+class TelemetryDataZ(ctypes.Structure):
+    _fields_ = [
+        ("type", ctypes.c_ushort),
+        ("dummy", ctypes.c_short),
+        ("timestamp", ctypes.c_uint),
+        ("rc_t",  ctypes.c_short),
+        ("dummy1", ctypes.c_short),
+        ("x_z",   ctypes.c_float),
+        ("u_z",   ctypes.c_float),
+        ("w_z",   ctypes.c_float),
+        ("y_z",   ctypes.c_float),
+        ("v_z",   ctypes.c_float),
+    ]
+
+def z(x, resp):
+  fmt = "<hhIhhfffff"
+  fmt_size = struct.calcsize(fmt)
+  k = TelemetryDataZ();
+  k.type, k.dummy, k.timestamp, k.rc_t, k.dummy1, k.x_z,k.u_z,k.w_z,k.y_z,k.v_z= struct.unpack(fmt, resp[:fmt_size])
+  print("z..: [{:d} {:d} {:f} {:f} {:f} {:f} {:f}]".format(k.timestamp, k.rc_t, k.x_z, k.u_z, k.w_z, k.y_z, k.v_z))
 def rc(x, resp):
   fmt = "<hhIhhhhhh"
   fmt_size = struct.calcsize(fmt)
@@ -135,6 +155,7 @@ async def sdrone():
             8: x,
             9: u,
             10: y,
+            11: z,
           }
           fmt = "<h18s"
           fmt_size = struct.calcsize(fmt)
