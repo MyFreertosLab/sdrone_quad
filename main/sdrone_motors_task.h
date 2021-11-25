@@ -27,8 +27,6 @@ typedef enum {
 } sdrone_motors_commands_t;
 
 typedef struct {
-	float desired_omega;
-	float actual_omega;
 	float at[3];
 	float thrust;
 	motors_status_t desired_motors_status;

@@ -185,6 +185,7 @@ void sdrone_update_predX_from_W_and_X(sdrone_state_handle_t sdrone_state_handle)
 
 void sdrone_update_Y_from_predX(sdrone_state_handle_t sdrone_state_handle) {
 	// controller response
+	// FIXME: gestire stato drone. In volo applica la correzione
 	if(sdrone_state_handle->controller_state[Z_POS].predX[SDRONE_X_THRUST_POS] > 2.0f) {
  	  for (uint8_t i = 0; i < 3; i++) {
   		sdrone_state_handle->controller_state[i].Y[SDRONE_Y_TORQUE_POS] =
