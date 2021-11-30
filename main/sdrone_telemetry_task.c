@@ -59,31 +59,31 @@ void sdrone_telemetry_task(void *arg) {
     		break;
     	}
     	case MESSAGE_X: {
-        	sdrone_telemetry_handle->telemetry_state.data.x.x = sdrone_telemetry_handle->sdrone_state_handle->controller_state[X_POS].X[SDRONE_TETA_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.x.y = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Y_POS].X[SDRONE_TETA_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.x.z = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].X[SDRONE_TETA_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.x.thrust = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].X[SDRONE_X_THRUST_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.x.x = sdrone_telemetry_handle->sdrone_state_handle->controller_state[X_POS].dynamic.X[SDRONE_X_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.x.y = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Y_POS].dynamic.X[SDRONE_X_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.x.z = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].dynamic.X[SDRONE_X_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.x.thrust = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].dynamic.X[SDRONE_X_ACC_POS];
     		break;
     	}
     	case MESSAGE_U: {
-        	sdrone_telemetry_handle->telemetry_state.data.u.x = sdrone_telemetry_handle->sdrone_state_handle->controller_state[X_POS].U[SDRONE_TETA_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.u.y = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Y_POS].U[SDRONE_TETA_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.u.z = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].U[SDRONE_TETA_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.u.thrust = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].U[SDRONE_UW_THRUST_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.u.x = sdrone_telemetry_handle->sdrone_state_handle->controller_state[X_POS].dynamic.U[SDRONE_X_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.u.y = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Y_POS].dynamic.U[SDRONE_X_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.u.z = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].dynamic.U[SDRONE_X_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.u.thrust = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].dynamic.U[SDRONE_UW_ACC_POS];
     		break;
     	}
     	case MESSAGE_W: {
-        	sdrone_telemetry_handle->telemetry_state.data.w.x = sdrone_telemetry_handle->sdrone_state_handle->controller_state[X_POS].W[SDRONE_TETA_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.w.y = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Y_POS].W[SDRONE_TETA_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.w.z = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].W[SDRONE_TETA_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.w.thrust = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].W[SDRONE_UW_THRUST_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.w.x = sdrone_telemetry_handle->sdrone_state_handle->controller_state[X_POS].dynamic.W[SDRONE_X_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.w.y = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Y_POS].dynamic.W[SDRONE_X_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.w.z = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].dynamic.W[SDRONE_X_TETA_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.w.thrust = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].dynamic.W[SDRONE_UW_ACC_POS];
     		break;
     	}
     	case MESSAGE_Y: {
-        	sdrone_telemetry_handle->telemetry_state.data.y.x = sdrone_telemetry_handle->sdrone_state_handle->controller_state[X_POS].Y[SDRONE_Y_TORQUE_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.y.y = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Y_POS].Y[SDRONE_Y_TORQUE_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.y.z = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].Y[SDRONE_Y_TORQUE_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.y.thrust = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].Y[SDRONE_Y_THRUST_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.y.x = sdrone_telemetry_handle->sdrone_state_handle->controller_state[X_POS].dynamic.Y[SDRONE_Y_TORQUE_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.y.y = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Y_POS].dynamic.Y[SDRONE_Y_TORQUE_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.y.z = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].dynamic.Y[SDRONE_Y_TORQUE_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.y.thrust = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].dynamic.Y[SDRONE_Y_ACC_POS];
     		break;
     	}
     	case MESSAGE_V: {
@@ -105,10 +105,10 @@ void sdrone_telemetry_task(void *arg) {
     	}
     	case MESSAGE_Z_DATA: {
         	sdrone_telemetry_handle->telemetry_state.data.z_data.rc_t = sdrone_telemetry_handle->sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE];
-        	sdrone_telemetry_handle->telemetry_state.data.z_data.x_t = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].X[SDRONE_X_THRUST_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.z_data.u_t = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].U[SDRONE_UW_THRUST_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.z_data.w_t = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].W[SDRONE_UW_THRUST_POS];
-        	sdrone_telemetry_handle->telemetry_state.data.z_data.y_t = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].Y[SDRONE_Y_THRUST_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.z_data.x_t = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].dynamic.X[SDRONE_X_ACC_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.z_data.u_t = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].dynamic.U[SDRONE_UW_ACC_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.z_data.w_t = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].dynamic.W[SDRONE_UW_ACC_POS];
+        	sdrone_telemetry_handle->telemetry_state.data.z_data.y_t = sdrone_telemetry_handle->sdrone_state_handle->controller_state[Z_POS].dynamic.Y[SDRONE_Y_ACC_POS];
         	sdrone_telemetry_handle->telemetry_state.data.z_data.vertical_v = sdrone_telemetry_handle->sdrone_state_handle->imu_state.imu.data.vertical_v;
     		break;
     	}

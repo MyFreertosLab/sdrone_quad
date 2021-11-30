@@ -51,6 +51,10 @@ void sdrone_imu_read_data_cycle(sdrone_imu_state_handle_t sdrone_imu_state_handl
 					mpu9250_handle->data.acc_g_factor_initialized = 1;
 					mpu9250_handle->data.vertical_acc_offset = vertical_acc_sum*mpu9250_handle->data.accel.acc_g_factor;
 					mpu9250_handle->data.vertical_v = 0.0f;
+					mpu9250_handle->data.yaw_reference = mpu9250_handle->data.gyro.rpy.xyz.z;
+					mpu9250_handle->data.speed_bf[X_POS] = 0.0f;
+					mpu9250_handle->data.speed_bf[Y_POS] = 0.0f;
+					mpu9250_handle->data.speed_bf[Z_POS] = 0.0f;
 					printf("Vertical Acc Offset [%5.5f]\n", mpu9250_handle->data.vertical_acc_offset);
 					printf("Vertical Acc Factor [%5.5f]\n", mpu9250_handle->data.accel.acc_g_factor);
 				}
