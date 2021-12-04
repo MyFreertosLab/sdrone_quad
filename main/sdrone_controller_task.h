@@ -41,11 +41,11 @@
 #define SDRONE_MAX_W_Z SDRONE_MAX_RADIANS_PER_SECOND*SDRONE_CONTROLLER_REACTIVITY_DT
 
 #define SDRONE_KE_ROLL  0.6f
-#define SDRONE_KI_ROLL  0.004f
+#define SDRONE_KI_ROLL  0.0f //0.004f
 #define SDRONE_KE_PITCH 0.6f // 0.7f
-#define SDRONE_KI_PITCH 0.004f // 0.008f
+#define SDRONE_KI_PITCH 0.0f //0.004f // 0.008f
 #define SDRONE_KE_Z     0.4f // 0.4f
-#define SDRONE_KI_Z     0.002f
+#define SDRONE_KI_Z     0.0f //0.002f
 
 #define SDRONE_KE_ACC_Z     0.4f // 0.4f
 #define SDRONE_KI_ACC_Z     0.0f//0.002f
@@ -136,6 +136,7 @@ typedef struct {
 	sdrone_imu_state_t imu_state;
 	uint32_t driver_id;
 	sdrone_dynamic_t controller_state[3]; // one for each axis x,y,z
+	mpu9250_cossin_t cossin_target;
 } sdrone_state_t;
 
 typedef sdrone_state_t* sdrone_state_handle_t;
