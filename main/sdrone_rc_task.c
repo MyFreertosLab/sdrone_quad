@@ -192,6 +192,7 @@ void sdrone_rc_task(void *arg) {
 			}
 		} else {
 			rc_data_local_handle->state = RC_NOT_CONNECTED;
+			ESP_ERROR_CHECK(rc_data_local_handle->stop(rc_data_local_handle));
 		}
 
 		// send notify
@@ -208,6 +209,7 @@ void sdrone_rc_task(void *arg) {
 			vTaskDelay(pdMS_TO_TICKS(10));
 		} else {
 			vTaskDelay(pdMS_TO_TICKS(100));
+			ESP_ERROR_CHECK(rc_data_local_handle->init(rc_data_local_handle));
 		}
 	}
 	vTaskDelete(NULL);

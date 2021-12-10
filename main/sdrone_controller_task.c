@@ -21,20 +21,42 @@ void sdrone_controller_init(sdrone_state_handle_t sdrone_state_handle) {
 	sdrone_state_handle->driver_id = (uint32_t) SDRONE_CONTROLLER_DRIVER_ID;
 
 	// rotational
+#ifdef SDRONE_DISABLE_ROLL
+	sdrone_state_handle->controller_state[X_POS].pid_alfa.ke = 0.0f;
+	sdrone_state_handle->controller_state[X_POS].pid_alfa.ki = 0.0f;
+#else
 	sdrone_state_handle->controller_state[X_POS].pid_alfa.ke = SDRONE_KE_ROLL;
 	sdrone_state_handle->controller_state[X_POS].pid_alfa.ki = SDRONE_KI_ROLL;
+#endif
+#ifdef SDRONE_DISABLE_PITCH
+	sdrone_state_handle->controller_state[Y_POS].pid_alfa.ke = 0.0f;
+	sdrone_state_handle->controller_state[Y_POS].pid_alfa.ki = 0.0f;
+#else
 	sdrone_state_handle->controller_state[Y_POS].pid_alfa.ke = SDRONE_KE_PITCH;
 	sdrone_state_handle->controller_state[Y_POS].pid_alfa.ki = SDRONE_KI_PITCH;
+#endif
+
+#ifdef SDRONE_DISABLE_YAW
+	sdrone_state_handle->controller_state[Z_POS].pid_alfa.ke = 0.0f;
+	sdrone_state_handle->controller_state[Z_POS].pid_alfa.ki = 0.0f;
+#else
 	sdrone_state_handle->controller_state[Z_POS].pid_alfa.ke = SDRONE_KE_Z;
 	sdrone_state_handle->controller_state[Z_POS].pid_alfa.ki = SDRONE_KI_Z;
+#endif
 
 	// linear
 	sdrone_state_handle->controller_state[X_POS].pid_acc.ke = 0.0f;
 	sdrone_state_handle->controller_state[X_POS].pid_acc.ki = 0.0f;
 	sdrone_state_handle->controller_state[Y_POS].pid_acc.ke = 0.0f;
 	sdrone_state_handle->controller_state[Y_POS].pid_acc.ki = 0.0f;
+
+#ifdef SDRONE_DISABLE_ACC
+	sdrone_state_handle->controller_state[Z_POS].pid_acc.ke = 0.0f;
+	sdrone_state_handle->controller_state[Z_POS].pid_acc.ki = 0.0f;
+#else
 	sdrone_state_handle->controller_state[Z_POS].pid_acc.ke = SDRONE_KE_ACC_Z;
 	sdrone_state_handle->controller_state[Z_POS].pid_acc.ki = SDRONE_KI_ACC_Z;
+#endif
 }
 
 uint16_t counter = 0;
@@ -42,37 +64,40 @@ void sdrone_controller_print_data(sdrone_state_handle_t sdrone_state_handle) {
 	counter++;
 	counter %= 500;
 	if (counter == 0) {
-//		printf("RC: [%d,%d,%d,%d,%d,%d]\n",
-//				sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL],
-//				sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH],
-//				sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW],
-//				sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE],
-//				sdrone_state_handle->rc_state.rc_data.data.norm[RC_SWA],
-//				sdrone_state_handle->rc_state.rc_data.data.norm[RC_SWB]);
-		printf("U: [%5.5f,%5.5f,%5.5f,%5.5f]\n",
+		printf("RC: [%d,%d,%d,%d,%d,%d]\n",
+				sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL],
+				sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH],
+				sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW],
+				sdrone_state_handle->rc_state.rc_data.data.norm[RC_THROTTLE],
+				sdrone_state_handle->rc_state.rc_data.data.norm[RC_SWA],
+				sdrone_state_handle->rc_state.rc_data.data.norm[RC_SWB]);
+		printf("U: DS[%d] RCS[%d] [%5.5f,%5.5f,%5.5f,%5.5f] YR:[%5.5f]\n",
+				sdrone_state_handle->state,
+				sdrone_state_handle->rc_state.rc_data.state,
 				sdrone_state_handle->controller_state[0].dynamic.U[SDRONE_UW_TETA_POS],
 				sdrone_state_handle->controller_state[1].dynamic.U[SDRONE_UW_TETA_POS],
 				sdrone_state_handle->controller_state[2].dynamic.U[SDRONE_UW_TETA_POS],
-				sdrone_state_handle->controller_state[2].dynamic.U[SDRONE_UW_ACC_POS]);
+				sdrone_state_handle->controller_state[2].dynamic.U[SDRONE_UW_ACC_POS],
+				sdrone_state_handle->yaw_reference);
 ////		printf("W: [%5.5f,%5.5f,%5.5f,%5.5f]\n",
 ////				sdrone_state_handle->controller_state[0].W[SDRONE_TETA_POS],
 ////				sdrone_state_handle->controller_state[1].W[SDRONE_TETA_POS],
 ////				sdrone_state_handle->controller_state[2].W[SDRONE_TETA_POS],
 ////				sdrone_state_handle->controller_state[2].W[SDRONE_THRUST_POS]);
-//		printf("RPY: [%5.5f,%5.5f,%5.5f]\n",
-//				sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.x,
-//				sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.y,
-//				sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.z);
+		printf("RPY: [%5.5f,%5.5f,%5.5f]\n",
+				sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.x,
+				sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.y,
+				sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.z);
 
-		printf("ACC: [%5.5f,%5.5f,%5.5f]\n",
-				sdrone_state_handle->imu_state.imu.data.accel.mss.array[X_POS],
-				sdrone_state_handle->imu_state.imu.data.accel.mss.array[Y_POS],
-				sdrone_state_handle->imu_state.imu.data.accel.mss.array[Z_POS]);
-		printf("THR: [%d] p=[%5.5f],e=[%5.5f],v=[%5.5f]\n",
-				sdrone_state_handle->state,
-				sdrone_state_handle->controller_state[Z_POS].dynamic.predX[SDRONE_X_ACC_POS],
-				sdrone_state_handle->controller_state[Z_POS].pid_acc.err,
-				sdrone_state_handle->imu_state.imu.data.speed_if[Z_POS]);
+//		printf("ACC: [%5.5f,%5.5f,%5.5f]\n",
+//				sdrone_state_handle->imu_state.imu.data.accel.mss.array[X_POS],
+//				sdrone_state_handle->imu_state.imu.data.accel.mss.array[Y_POS],
+//				sdrone_state_handle->imu_state.imu.data.accel.mss.array[Z_POS]);
+//		printf("THR: [%d] p=[%5.5f],e=[%5.5f],v=[%5.5f]\n",
+//				sdrone_state_handle->state,
+//				sdrone_state_handle->controller_state[Z_POS].dynamic.predX[SDRONE_X_ACC_POS],
+//				sdrone_state_handle->controller_state[Z_POS].pid_acc.err,
+//				sdrone_state_handle->imu_state.imu.data.speed_if[Z_POS]);
 //		printf("DUT: [%5.5f, %5.5f, %5.5f, %5.5f]\n",
 //				sdrone_state_handle->motors_state.motors.motor[0].duty_cycle,
 //				sdrone_state_handle->motors_state.motors.motor[1].duty_cycle,
@@ -147,10 +172,10 @@ void sdrone_update_U_from_RC_RPY(sdrone_state_handle_t sdrone_state_handle) {
 			sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH] * SDRONE_NORM_PITCH_TO_RADIANS_FACTOR;
 
 	if (abs(sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW]) > 10) {
-		sdrone_state_handle->imu_state.imu.data.yaw_reference = sdrone_state_handle->controller_state[Z_POS].dynamic.X[SDRONE_UW_TETA_POS] +
+		sdrone_state_handle->yaw_reference = sdrone_state_handle->controller_state[Z_POS].dynamic.X[SDRONE_UW_TETA_POS] +
 				sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW] * SDRONE_NORM_YAW_TO_RADIANS_FACTOR;
 	}
-	sdrone_state_handle->controller_state[Z_POS].dynamic.U[SDRONE_UW_TETA_POS] = sdrone_state_handle->imu_state.imu.data.yaw_reference;
+	sdrone_state_handle->controller_state[Z_POS].dynamic.U[SDRONE_UW_TETA_POS] = sdrone_state_handle->yaw_reference;
 	sdrone_calc_target_cossin_from_U(sdrone_state_handle);
 
 }
@@ -190,8 +215,11 @@ void sdrone_update_U_from_RC(sdrone_state_handle_t sdrone_state_handle) {
 
 		// update target_cossin
 		sdrone_calc_target_cossin_from_U(sdrone_state_handle);
+#ifdef SDRONE_DISABLE_ACC
+		sdrone_state_handle->controller_state[Z_POS].dynamic.U[SDRONE_UW_ACC_POS] = SDRONE_GRAVITY_ACCELERATION;
+#else
 		sdrone_state_handle->controller_state[Z_POS].dynamic.U[SDRONE_UW_ACC_POS] = SDRONE_GRAVITY_ACCELERATION + 0.25f;
-
+#endif
 		break;
 	}
 	case SDRONE_TAKEN_OFF: {
@@ -340,7 +368,8 @@ void sdrone_update_Y(sdrone_state_handle_t sdrone_state_handle) {
  	  sdrone_state_handle->controller_state[Z_POS].dynamic.Y[SDRONE_Y_ACC_POS] =
  			 xAcc_bf[Z_POS]
  			  + sdrone_state_handle->controller_state[Z_POS].pid_acc.err * sdrone_state_handle->controller_state[Z_POS].pid_acc.ke
-			  + sdrone_state_handle->controller_state[Z_POS].pid_acc.ierr * sdrone_state_handle->controller_state[Z_POS].pid_acc.ki;
+			  + sdrone_state_handle->controller_state[Z_POS].pid_acc.ierr * sdrone_state_handle->controller_state[Z_POS].pid_acc.ki
+			  ;
 	} else {
 		for(uint8_t i = 0; i < 3; i++) {
 		  sdrone_state_handle->controller_state[i].dynamic.Y[SDRONE_Y_TORQUE_POS] = 0.0f;
@@ -356,14 +385,17 @@ void sdrone_update_motors_input_data_from_Y(
 		sdrone_state_handle->motors_state.input.data.at[i] = 0.0f;
 	}
 
-#ifdef SDRONE_ENABLE_ROLL
-		sdrone_state_handle->motors_state.input.data.at[X_POS] = sdrone_state_handle->controller_state[X_POS].dynamic.Y[SDRONE_Y_TORQUE_POS];
+#ifdef SDRONE_DISABLE_ROLL
+#else
+	sdrone_state_handle->motors_state.input.data.at[X_POS] = sdrone_state_handle->controller_state[X_POS].dynamic.Y[SDRONE_Y_TORQUE_POS];
 #endif
-#ifdef SDRONE_ENABLE_PITCH
-		sdrone_state_handle->motors_state.input.data.at[Y_POS] = sdrone_state_handle->controller_state[Y_POS].dynamic.Y[SDRONE_Y_TORQUE_POS];
+#ifdef SDRONE_DISABLE_PITCH
+#else
+	sdrone_state_handle->motors_state.input.data.at[Y_POS] = sdrone_state_handle->controller_state[Y_POS].dynamic.Y[SDRONE_Y_TORQUE_POS];
 #endif
-#ifdef SDRONE_ENABLE_YAW
-		sdrone_state_handle->motors_state.input.data.at[Z_POS] = sdrone_state_handle->controller_state[Z_POS].dynamic.Y[SDRONE_Y_TORQUE_POS];
+#ifdef SDRONE_DISABLE_YAW
+#else
+	sdrone_state_handle->motors_state.input.data.at[Z_POS] = sdrone_state_handle->controller_state[Z_POS].dynamic.Y[SDRONE_Y_TORQUE_POS];
 #endif
 	sdrone_state_handle->motors_state.input.data.thrust = sdrone_state_handle->controller_state[Z_POS].dynamic.Y[SDRONE_Y_ACC_POS];
 }
@@ -516,6 +548,7 @@ void sdrone_controller_cycle(sdrone_state_handle_t sdrone_state_handle) {
 #endif
 				} else {
 					skip_counter--;
+					sdrone_state_handle->yaw_reference = (float)sdrone_state_handle->imu_state.imu.data.gyro.rpy.xyz.z;
 				}
 			}
 		} else {

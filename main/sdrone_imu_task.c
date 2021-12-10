@@ -50,8 +50,6 @@ void sdrone_imu_read_data_cycle(sdrone_imu_state_handle_t sdrone_imu_state_handl
 					mpu9250_handle->data.accel.acc_g_factor = -mpu9250_handle->data.gravity_bf[Z_POS]/(vertical_acc_sum + SDRONE_GRAVITY_ACCELERATION);
 					mpu9250_handle->data.acc_g_factor_initialized = 1;
 					mpu9250_handle->data.vertical_acc_offset = vertical_acc_sum*mpu9250_handle->data.accel.acc_g_factor;
-					mpu9250_handle->data.speed_if[Z_POS] = 0.0f;
-					mpu9250_handle->data.yaw_reference = mpu9250_handle->data.gyro.rpy.xyz.z;
 					mpu9250_handle->data.speed_if[X_POS] = 0.0f;
 					mpu9250_handle->data.speed_if[Y_POS] = 0.0f;
 					mpu9250_handle->data.speed_if[Z_POS] = 0.0f;

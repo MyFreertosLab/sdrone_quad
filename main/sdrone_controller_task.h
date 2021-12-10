@@ -13,6 +13,12 @@
 #include <sdrone_imu_task.h>
 
 //#define SDRONE_DEBUG_LOG
+//#define SDRONE_DISABLE_ACC
+//#define SDRONE_DISABLE_ROLL
+//#define SDRONE_DISABLE_PITCH
+//#define SDRONE_DISABLE_YAW
+
+
 #define SDRONE_MAX_ROLL_RADIANS  1.2217f // 70deg
 #define SDRONE_MAX_PITCH_RADIANS  1.2217f // 70deg
 
@@ -70,10 +76,6 @@
 #define SDRONE_AXIS_X_POS    0
 #define SDRONE_AXIS_Y_POS    1
 #define SDRONE_AXIS_Z_POS    2
-
-#define SDRONE_ENABLE_ROLL
-#define SDRONE_ENABLE_PITCH
-#define SDRONE_ENABLE_YAW
 
 #define MOTORS_FRAME_X_QUADCOPTER
 //#define MOTORS_FRAME_ONE_HORIZONTAL_AXIS
@@ -139,6 +141,7 @@ typedef struct {
 	uint32_t driver_id;
 	sdrone_dynamic_t controller_state[3]; // one for each axis x,y,z
 	mpu9250_cossin_t cossin_target;
+	float yaw_reference;
 } sdrone_state_t;
 
 typedef sdrone_state_t* sdrone_state_handle_t;
