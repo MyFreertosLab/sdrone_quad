@@ -72,7 +72,7 @@ void sdrone_controller_print_data(sdrone_state_handle_t sdrone_state_handle) {
 				sdrone_state_handle->state,
 				sdrone_state_handle->controller_state[Z_POS].dynamic.predX[SDRONE_X_ACC_POS],
 				sdrone_state_handle->controller_state[Z_POS].pid_acc.err,
-				sdrone_state_handle->imu_state.imu.data.vertical_v);
+				sdrone_state_handle->imu_state.imu.data.speed_if[Z_POS]);
 //		printf("DUT: [%5.5f, %5.5f, %5.5f, %5.5f]\n",
 //				sdrone_state_handle->motors_state.motors.motor[0].duty_cycle,
 //				sdrone_state_handle->motors_state.motors.motor[1].duty_cycle,
@@ -107,7 +107,7 @@ void sdrone_update_X_from_IMU(sdrone_state_handle_t sdrone_state_handle) {
 		sdrone_state_handle->controller_state[i].dynamic.X[SDRONE_X_ALFA_POS] = sdrone_state_handle->imu_state.imu.data.gyro.alfa[i];
 
 		// linear in body frame
-		sdrone_state_handle->controller_state[i].dynamic.X[SDRONE_X_SPEED_POS] = sdrone_state_handle->imu_state.imu.data.speed_bf[i];
+		sdrone_state_handle->controller_state[i].dynamic.X[SDRONE_X_SPEED_POS] = sdrone_state_handle->imu_state.imu.data.speed_if[i];
 		sdrone_state_handle->controller_state[i].dynamic.X[SDRONE_X_ACC_POS] = sdrone_state_handle->imu_state.imu.data.accel.mss.array[i];
 	}
 }
@@ -213,7 +213,7 @@ void sdrone_update_U_from_RC(sdrone_state_handle_t sdrone_state_handle) {
 
 	case SDRONE_LANDING: {
 		sdrone_update_U_from_RC_RPY(sdrone_state_handle);
-		acc_if[Z_POS] = SDRONE_GRAVITY_ACCELERATION - (SDRONE_LANDING_SPEED + sdrone_state_handle->imu_state.imu.data.vertical_v)/SDRONE_CONTROLLER_REACTIVITY_DT;
+		acc_if[Z_POS] = SDRONE_GRAVITY_ACCELERATION - (SDRONE_LANDING_SPEED + sdrone_state_handle->imu_state.imu.data.speed_if[Z_POS])/SDRONE_CONTROLLER_REACTIVITY_DT;
 		ESP_ERROR_CHECK(mpu9250_to_body_frame(&sdrone_state_handle->cossin_target, acc_if, acc_target_bf));
 		for(uint8_t i = 0; i < 3; i++) {
 			sdrone_state_handle->controller_state[i].dynamic.U[SDRONE_UW_ACC_POS] = acc_target_bf[i];
@@ -462,7 +462,7 @@ esp_err_t sdrone_eval_rc_gesture(sdrone_state_handle_t sdrone_state_handle) {
 		sdrone_state_handle->state = SDRONE_TAKEN_OFF;
 		return ESP_OK;
 	}
-	if((sdrone_state_handle->state == SDRONE_LANDING) && (sdrone_state_handle->imu_state.imu.data.vertical_v <= 0.001f && sdrone_state_handle->imu_state.imu.data.vertical_v >= -0.001f)) {
+	if((sdrone_state_handle->state == SDRONE_LANDING) && (sdrone_state_handle->imu_state.imu.data.speed_if[Z_POS] <= 0.001f && sdrone_state_handle->imu_state.imu.data.speed_if[Z_POS] >= -0.001f)) {
 		sdrone_state_handle->state = SDRONE_OFF;
 		return ESP_OK;
 	}
