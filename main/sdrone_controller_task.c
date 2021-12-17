@@ -107,8 +107,8 @@ void sdrone_controller_print_data(sdrone_state_handle_t sdrone_state_handle) {
 				sdrone_state_handle->controller_state[X_POS].pid_acc.ierr,
 				sdrone_state_handle->controller_state[Y_POS].pid_acc.ierr,
 				sdrone_state_handle->controller_state[Z_POS].pid_acc.ierr,
-				sdrone_state_handle->controller_state[X_POS].pid_acc.ke,
-				sdrone_state_handle->controller_state[Y_POS].pid_acc.ki
+				sdrone_state_handle->controller_state[Z_POS].pid_acc.ke,
+				sdrone_state_handle->controller_state[Z_POS].pid_acc.ki
 				);
 
 //		printf("THR: [%d] p=[%5.5f],e=[%5.5f],v=[%5.5f]\n",
@@ -137,12 +137,20 @@ bool sdrone_motors_are_disarmed(sdrone_state_handle_t sdrone_state_handle) {
 	return (sdrone_state_handle->motors_state.motors.status == MOTORS_DISARMED);
 }
 
+#ifdef SDRONE_ENABLE_TUNING_ACC
 void sdrone_update_ke_ki_acc_from_rc(sdrone_state_handle_t sdrone_state_handle) {
+#ifdef SDRONE_ENABLE_TUNING_ACC_Z
+	sdrone_state_handle->controller_state[Z_POS].pid_acc.ke = SDRONE_ACC_KE_Z_RANGE/2.0f + ((float)sdrone_state_handle->rc_state.rc_data.data.norm[RC_VRA])*SDRONE_NORM_ACC_KE_Z_FACTOR;
+	sdrone_state_handle->controller_state[Z_POS].pid_acc.ki = SDRONE_ACC_KI_Z_RANGE/2.0f + ((float)sdrone_state_handle->rc_state.rc_data.data.norm[RC_VRB])*SDRONE_NORM_ACC_KI_Z_FACTOR;
+#else
 	sdrone_state_handle->controller_state[X_POS].pid_acc.ke = SDRONE_ACC_KE_RANGE/2.0f + ((float)sdrone_state_handle->rc_state.rc_data.data.norm[RC_VRA])*SDRONE_NORM_ACC_KE_FACTOR;
 	sdrone_state_handle->controller_state[X_POS].pid_acc.ki = SDRONE_ACC_KI_RANGE/2.0f + ((float)sdrone_state_handle->rc_state.rc_data.data.norm[RC_VRB])*SDRONE_NORM_ACC_KI_FACTOR;
 	sdrone_state_handle->controller_state[Y_POS].pid_acc.ke = sdrone_state_handle->controller_state[X_POS].pid_acc.ke;
 	sdrone_state_handle->controller_state[Y_POS].pid_acc.ki = sdrone_state_handle->controller_state[X_POS].pid_acc.ki;
+#endif
 }
+#endif
+
 void sdrone_update_X_from_IMU(sdrone_state_handle_t sdrone_state_handle) {
 	// Update X from IMU
 	for (uint8_t i = 0; i < 3; i++) {
@@ -416,8 +424,9 @@ void sdrone_update_motors_input_data_from_Y(
 
 esp_err_t sdrone_controller_control(sdrone_state_handle_t sdrone_state_handle) {
 
-	// FIXME: solo per tuning. Poi togliere
+#ifdef SDRONE_ENABLE_TUNING_ACC
 	sdrone_update_ke_ki_acc_from_rc(sdrone_state_handle);
+#endif
 
 	// Update X from IMU
 	sdrone_update_X_from_IMU(sdrone_state_handle);
