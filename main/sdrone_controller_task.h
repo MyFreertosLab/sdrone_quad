@@ -80,7 +80,7 @@
 #define SDRONE_KI_Z     0.002f
 
 #define SDRONE_KE_ACC_Z     0.68f
-#define SDRONE_KI_ACC_Z     0.0090f
+#define SDRONE_KI_ACC_Z     0.004f
 #define SDRONE_KE_ACC       0.0f
 #define SDRONE_KI_ACC       0.0f//0.002f
 
@@ -140,6 +140,7 @@ typedef struct {
 	float ierr;
 	float derr;
 	float prevErr;
+	float correction;
 	float ke;
 	float ki;
 	float kd;
