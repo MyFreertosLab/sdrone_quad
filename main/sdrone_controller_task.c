@@ -183,24 +183,15 @@ void sdrone_calc_target_cossin_from_U(sdrone_state_handle_t sdrone_state_handle)
  * acc_if_rp is in inertial frame but without yaw (follow drone direction)
  */
 void sdrone_calc_acc_from_rc(sdrone_state_handle_t sdrone_state_handle, float acc_if_z) {
-	float acc_if_rp[3] = {0.0f,0.0f,0.0f};
-
-	acc_if_rp[X_POS] = ((float)sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH])*SDRONE_NORM_PITCH_TO_ACCEL_FACTOR;
-	acc_if_rp[Y_POS] = -((float)sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL])*SDRONE_NORM_ROLL_TO_ACCEL_FACTOR;
-	acc_if_rp[Z_POS] = acc_if_z;
-
 	// FIXME: fare meglio generalizzando una bolla zero intorno al centro dello stick
 	if (abs(sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW]) > 10) {
 		sdrone_state_handle->yaw_reference = sdrone_state_handle->controller_state[Z_POS].dynamic.X[SDRONE_UW_TETA_POS] +
 				sdrone_state_handle->rc_state.rc_data.data.norm[RC_YAW] * SDRONE_NORM_YAW_TO_RADIANS_FACTOR;
 	}
-	float cy = cos((double)sdrone_state_handle->yaw_reference);
-	float sy = sin((double)sdrone_state_handle->yaw_reference);
 
-	// rotate accel vector of target yaw angle (accel vector in inertial frame coordinates)
-	sdrone_state_handle->controller_state[X_POS].dynamic.U[SDRONE_UW_ACC_POS] = cy*acc_if_rp[X_POS] - sy*acc_if_rp[Y_POS];
-	sdrone_state_handle->controller_state[Y_POS].dynamic.U[SDRONE_UW_ACC_POS] = sy*acc_if_rp[X_POS] + cy*acc_if_rp[Y_POS];
-	sdrone_state_handle->controller_state[Z_POS].dynamic.U[SDRONE_UW_ACC_POS] = acc_if_rp[Z_POS];
+	sdrone_state_handle->controller_state[X_POS].dynamic.U[SDRONE_UW_ACC_POS] = ((float)sdrone_state_handle->rc_state.rc_data.data.norm[RC_PITCH])*SDRONE_NORM_PITCH_TO_ACCEL_FACTOR;;
+	sdrone_state_handle->controller_state[Y_POS].dynamic.U[SDRONE_UW_ACC_POS] = -((float)sdrone_state_handle->rc_state.rc_data.data.norm[RC_ROLL])*SDRONE_NORM_ROLL_TO_ACCEL_FACTOR;
+	sdrone_state_handle->controller_state[Z_POS].dynamic.U[SDRONE_UW_ACC_POS] = acc_if_z;
 
 	// calculate inertial frame corrections
 	for (uint8_t i = 0; i < 3; i++) {
@@ -224,7 +215,7 @@ void sdrone_calc_acc_from_rc(sdrone_state_handle_t sdrone_state_handle, float ac
 		sdrone_state_handle->controller_state[Z_POS].dynamic.U[SDRONE_UW_ACC_POS] = sdrone_state_handle->controller_state[Z_POS].dynamic.U[SDRONE_UW_ACC_POS]*factor;
 	}
 
-	// inertial frame RPY
+	// RPY
 	sdrone_state_handle->controller_state[X_POS].dynamic.U[SDRONE_UW_TETA_POS] = asin(-((double)sdrone_state_handle->controller_state[Y_POS].dynamic.U[SDRONE_UW_ACC_POS]/magnitude));
 	sdrone_state_handle->controller_state[Y_POS].dynamic.U[SDRONE_UW_TETA_POS] = asin(((double)sdrone_state_handle->controller_state[X_POS].dynamic.U[SDRONE_UW_ACC_POS]/magnitude));
 	sdrone_state_handle->controller_state[Z_POS].dynamic.U[SDRONE_UW_TETA_POS] = sdrone_state_handle->yaw_reference;
@@ -381,18 +372,18 @@ void sdrone_update_Y(sdrone_state_handle_t sdrone_state_handle) {
 	float xAcc_if[3] = {0.0f,0.0f,0.0f};
 	float xAcc_bf[3] = {0.0f,0.0f,0.0f};
 
-	// convert linear accel predX from inertial frame to actual body frame
 	for(uint8_t i = 0; i < 3; i++) {
 		xAcc_if[i] = sdrone_state_handle->controller_state[i].dynamic.predX[SDRONE_X_ACC_POS] + sdrone_state_handle->controller_state[i].pid_acc.correction;
 	}
+	// convert linear accel predX from inertial frame to actual body frame
 	ESP_ERROR_CHECK(mpu9250_to_body_frame(&sdrone_state_handle->imu_state.imu.data.cossin_actual, xAcc_if, xAcc_bf));
 
 	// controller response
 	if(sdrone_state_handle->state == SDRONE_TAKE_OFF || sdrone_state_handle->state == SDRONE_TAKEN_OFF || sdrone_state_handle->state == SDRONE_LANDING) {
- 	  for (uint8_t i = 0; i < 3; i++) {
-  		sdrone_state_handle->controller_state[i].dynamic.Y[SDRONE_Y_TORQUE_POS] =
-				(SDRONE_AXIS_LENGTH * sdrone_state_handle->controller_state[i].dynamic.predX[SDRONE_X_ALFA_POS] +sdrone_state_handle->controller_state[i].pid_alfa.correction);
-	  }
+		// rotate torques to body frame yaw
+		for(uint8_t i = 0; i < 3; i++) {
+	  		sdrone_state_handle->controller_state[i].dynamic.Y[SDRONE_Y_TORQUE_POS] = (SDRONE_AXIS_LENGTH * sdrone_state_handle->controller_state[i].dynamic.predX[SDRONE_X_ALFA_POS] +sdrone_state_handle->controller_state[i].pid_alfa.correction);
+		}
  	  sdrone_state_handle->controller_state[Z_POS].dynamic.Y[SDRONE_Y_ACC_POS] = xAcc_bf[Z_POS];
 	} else {
 		for(uint8_t i = 0; i < 3; i++) {
