@@ -82,7 +82,7 @@
 #define SDRONE_KE_ACC_Z     0.68f
 #define SDRONE_KI_ACC_Z     0.004f
 #define SDRONE_KE_ACC       0.0f
-#define SDRONE_KI_ACC       0.0f//0.002f
+#define SDRONE_KI_ACC       0.0f
 
 #define SDRONE_AXIS_LENGTH 0.20f
 #define SDRONE_MASS 1.2f
