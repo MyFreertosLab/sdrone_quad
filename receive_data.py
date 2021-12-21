@@ -5,6 +5,7 @@ import ctypes
 import struct
 import asyncio
 import websockets
+import traceback
 
 class TelemetryData(ctypes.Structure):
     _fields_ = [
@@ -68,94 +69,72 @@ class TelemetryDataZ(ctypes.Structure):
         ("v_z",   ctypes.c_float),
     ]
 
-def z(x, resp):
-  fmt = "<hhIhhfffff"
+def urot(x, resp):
+  fmt = "<hhIfff"
   fmt_size = struct.calcsize(fmt)
-  k = TelemetryDataZ();
-  k.type, k.dummy, k.timestamp, k.rc_t, k.dummy1, k.x_z,k.u_z,k.w_z,k.y_z,k.v_z= struct.unpack(fmt, resp[:fmt_size])
-  print("z..: [{:d} {:d} {:f} {:f} {:f} {:f} {:f}]".format(k.timestamp, k.rc_t, k.x_z, k.u_z, k.w_z, k.y_z, k.v_z))
-def rc(x, resp):
-  fmt = "<hhIhhhhhh"
-  fmt_size = struct.calcsize(fmt)
-  k = TelemetryDataRc();
-  k.type, k.dummy, k.timestamp, k.throttle, k.roll,k.pitch,k.yaw,k.aux1,k.aux2= struct.unpack(fmt, resp[:fmt_size])
-  print("rc.: [{:d} {:d} {:d} {:d} {:d} {:d} {:d}]".format(k.timestamp, k.throttle, k.roll, k.pitch, k.yaw, k.aux1, k.aux2))
+  k = TelemetryData3Df();
+  k.type, k.dummy, k.timestamp, k.x, k.y,k.z = struct.unpack(fmt, resp[:fmt_size])
+  print("urot: [{:d} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z))
 def rpy(x, resp):
   fmt = "<hhIfff"
   fmt_size = struct.calcsize(fmt)
   k = TelemetryData3Df();
   k.type, k.dummy, k.timestamp, k.x, k.y,k.z = struct.unpack(fmt, resp[:fmt_size])
   print("rpy: [{:d} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z))
-def acc(x, resp):
+def alfa(x, resp):
+  fmt = "<hhIfff"
+  fmt_size = struct.calcsize(fmt)
+  k = TelemetryData3Df();
+  k.type, k.dummy, k.timestamp, k.x, k.y,k.z = struct.unpack(fmt, resp[:fmt_size])
+  print("alfa: [{:d} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z))
+def ealfa(x, resp):
+  fmt = "<hhIfff"
+  fmt_size = struct.calcsize(fmt)
+  k = TelemetryData3Df();
+  k.type, k.dummy, k.timestamp, k.x, k.y,k.z = struct.unpack(fmt, resp[:fmt_size])
+  print("ealfa: [{:d} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z))
+def uacc(x, resp):
+  fmt = "<hhIfff"
+  fmt_size = struct.calcsize(fmt)
+  k = TelemetryData3Df();
+  k.type, k.dummy, k.timestamp, k.x, k.y,k.z = struct.unpack(fmt, resp[:fmt_size])
+  print("uacc: [{:d} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z))
+def acc(data, resp):
   fmt = "<hhIfff"
   fmt_size = struct.calcsize(fmt)
   k = TelemetryData3Df();
   k.type, k.dummy, k.timestamp, k.x, k.y,k.z = struct.unpack(fmt, resp[:fmt_size])
   print("acc: [{:d} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z))
-def x(data, resp):
-  fmt = "<hhIffff"
-  fmt_size = struct.calcsize(fmt)
-  k = TelemetryData4Df();
-  k.type, k.dummy, k.timestamp, k.x, k.y,k.z,k.t = struct.unpack(fmt, resp[:fmt_size])
-  print("x..: [{:d} {:f} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z, k.t))
-def u(x, resp):
-  fmt = "<hhIffff"
-  fmt_size = struct.calcsize(fmt)
-  k = TelemetryData4Df();
-  k.type, k.dummy, k.timestamp, k.x, k.y,k.z,k.t = struct.unpack(fmt, resp[:fmt_size])
-  print("u..: [{:d} {:f} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z, k.t))
-def w(x, resp):
-  fmt = "<hhIffff"
-  fmt_size = struct.calcsize(fmt)
-  k = TelemetryData4Df();
-  k.type, k.dummy, k.timestamp, k.x, k.y,k.z,k.t = struct.unpack(fmt, resp[:fmt_size])
-  print("w..: [{:d} {:f} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z, k.t))
-def y(x, resp):
-  fmt = "<hhIffff"
-  fmt_size = struct.calcsize(fmt)
-  k = TelemetryData4Df();
-  k.type, k.dummy, k.timestamp, k.x, k.y,k.z,k.t = struct.unpack(fmt, resp[:fmt_size])
-  print("y..: [{:d} {:f} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z, k.t))
-def axis(x, resp):
-  fmt = "<hhIffff"
-  fmt_size = struct.calcsize(fmt)
-  k = TelemetryData4Df();
-  k.type, k.dummy, k.timestamp, k.x, k.y,k.z,k.t = struct.unpack(fmt, resp[:fmt_size])
-  print("ax.: [{:d} {:f} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z, k.t))
-def gravity(x, resp):
+def speed(data, resp):
   fmt = "<hhIfff"
   fmt_size = struct.calcsize(fmt)
   k = TelemetryData3Df();
   k.type, k.dummy, k.timestamp, k.x, k.y,k.z = struct.unpack(fmt, resp[:fmt_size])
-  print("gr.: [{:d} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z))
-
-def vertical_v(x, resp):
-  fmt = "<hhIf"
+  print("speed: [{:d} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z))
+def eacc(data, resp):
+  fmt = "<hhIfff"
   fmt_size = struct.calcsize(fmt)
-  k = TelemetryDataf();
-  k.type, k.dummy, k.timestamp, k.v = struct.unpack(fmt, resp[:fmt_size])
-  print("vv.: [{:d} {:f}]".format(k.timestamp, k.v))
+  k = TelemetryData3Df();
+  k.type, k.dummy, k.timestamp, k.x, k.y,k.z = struct.unpack(fmt, resp[:fmt_size])
+  print("eacc: [{:d} {:f} {:f} {:f}]".format(k.timestamp, k.x, k.y, k.z))
 
 async def sdrone():
-#  try:
-    async with websockets.connect("ws://192.168.4.1:80/ws", ping_interval=300, ping_timeout=300) as websocket:
-#    async with websockets.connect("ws://192.168.4.1:80/ws") as websocket:
+  try:
+    async with websockets.connect("ws://192.168.4.1:80/telemetry", ping_interval=400, ping_timeout=500) as websocket:
+#    async with websockets.connect("ws://192.168.4.1:80/telemetry") as websocket:
         await websocket.send("Hello world!")
         while True:
           resp = await websocket.recv()
           data = TelemetryData()
           options = {
-            1: rc,
+            1: urot,
             2: rpy,
-            3: acc,
-            4: w,
-            5: axis,
-            6: gravity,
-            7: vertical_v,
-            8: x,
-            9: u,
-            10: y,
-            11: z,
+            3: alfa,
+            4: ealfa,
+            5: uacc,
+            6: speed,
+            7: acc,
+            8: eacc,
           }
           fmt = "<h18s"
           fmt_size = struct.calcsize(fmt)
@@ -163,7 +142,10 @@ async def sdrone():
           data.type, temp = struct.unpack(fmt, resp[:fmt_size])
           options[data.type](data, resp);
         await websocket.close()
-#  except:
+  except Exception:
+     traceback.print_exc()
+#  except Exception as e:
+#     print(e);
 #     print("Exception received");
 
 #for x in range(100000):

@@ -72,9 +72,9 @@
 
 #define SDRONE_LANDING_SPEED 0.15f
 
-#define SDRONE_KE_ROLL  0.7f
+#define SDRONE_KE_ROLL  0.9f//0.7f
 #define SDRONE_KI_ROLL  0.004f
-#define SDRONE_KE_PITCH 0.7f
+#define SDRONE_KE_PITCH 0.7f//0.7f
 #define SDRONE_KI_PITCH 0.004f
 #define SDRONE_KE_Z     0.4f
 #define SDRONE_KI_Z     0.002f

@@ -1,227 +1,148 @@
-echo RC='['
-cat trace-volo-12.txt|grep rc|sed -e 's/^rc..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+source_file=$1
+echo urot='['
+cat $source_file|grep -e '^urot:'|sed -e 's/^urot:..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
-echo RPY='['
-cat trace-volo-12.txt|grep rpy|sed -e 's/^rpy..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+echo rpy='['
+cat $source_file|grep -e '^rpy:'|sed -e 's/^rpy:..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
-echo ACC='['
-cat trace-volo-12.txt|grep acc|sed -e 's/^acc..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+echo alfa='['
+cat $source_file|grep -e '^alfa:'|sed -e 's/^alfa:..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
-echo GR='['
-cat trace-volo-12.txt|grep gr|sed -e 's/^gr..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+echo ealfa='['
+cat $source_file|grep -e '^ealfa:'|sed -e 's/^ealfa:..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
-echo AX='['
-cat trace-volo-12.txt|grep ax|sed -e 's/^ax..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+echo uacc='['
+cat $source_file|grep -e '^uacc:'|sed -e 's/^uacc:..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
-echo X='['
-cat trace-volo-12.txt|grep 'x\.\.'|sed -e 's/^x..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+echo speed='['
+cat $source_file|grep -e '^speed:'|sed -e 's/^speed:..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
-echo U='['
-cat trace-volo-12.txt|grep u|sed -e 's/^u..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+echo acc='['
+cat $source_file|grep -e '^acc:'|sed -e 's/^acc:..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
-echo W='['
-cat trace-volo-12.txt|grep w|sed -e 's/^w..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
-echo '];'
-echo Y='['
-cat trace-volo-12.txt|grep 'y\.\.'|sed -e 's/^y..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
-echo '];'
-echo VV='['
-cat trace-volo-12.txt|grep vv|sed -e 's/^vv..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
+echo eacc='['
+cat $source_file|grep -e '^eacc:'|sed -e 's/^eacc:..*\[//g'|sed -e 's/\]/;/g'|sed -e 's/ /,/g'
 echo '];'
 cat <<EOF
-RC_THRUST=RC(1:size(RC,1),2);
-RC_ROLL=RC(1:size(RC,1),3);
-RC_PITCH=RC(1:size(RC,1),4);
-RC_YAW=RC(1:size(RC,1),5);
 
-ACC_X=ACC(1:size(ACC,1),2);
-ACC_Y=ACC(1:size(ACC,1),3);
-ACC_Z=ACC(1:size(ACC,1),4);
+urot_roll=urot(1:size(urot,1),2);
+urot_pitch=urot(1:size(urot,1),3);
+urot_yaw=urot(1:size(urot,1),4);
 
-X_X=X(1:size(X,1),2);
-X_Y=X(1:size(X,1),3);
-X_Z=X(1:size(X,1),4);
-X_THRUST=X(1:size(W,1),5);
+rpy_roll=rpy(1:size(rpy,1),2);
+rpy_pitch=rpy(1:size(rpy,1),3);
+rpy_yaw=rpy(1:size(rpy,1),4);
 
-U_X=U(1:size(U,1),2);
-U_Y=U(1:size(U,1),3);
-U_Z=U(1:size(U,1),4);
-U_THRUST=U(1:size(U,1),5);
+alfa_roll=alfa(1:size(alfa,1),2);
+alfa_pitch=alfa(1:size(alfa,1),3);
+alfa_yaw=alfa(1:size(alfa,1),4);
 
-W_X=W(1:size(W,1),2);
-W_Y=W(1:size(W,1),3);
-W_Z=W(1:size(W,1),4);
-W_THRUST=W(1:size(W,1),5);
+ealfa_roll=ealfa(1:size(ealfa,1),2);
+ealfa_pitch=ealfa(1:size(ealfa,1),3);
+ealfa_yaw=ealfa(1:size(ealfa,1),4);
 
-Y_X=Y(1:size(Y,1),2);
-Y_Y=Y(1:size(Y,1),3);
-Y_Z=Y(1:size(Y,1),4);
-Y_T=Y(1:size(Y,1),5);
+uacc_x=uacc(1:size(uacc,1),2);
+uacc_y=uacc(1:size(uacc,1),3);
+uacc_z=uacc(1:size(uacc,1),4);
 
-AX_X=AX(1:size(AX,1),2);
-AX_Y=AX(1:size(AX,1),4);
-AX_Z=AX(1:size(AX,1),3);
-AX_T=AX(1:size(AX,1),5);
+speed_x=speed(1:size(speed,1),2);
+speed_y=speed(1:size(speed,1),3);
+speed_z=speed(1:size(speed,1),4);
 
-GR=GR .* (-1);
-GR_X=GR(1:size(GR,1),2);
-GR_Y=GR(1:size(GR,1),3);
-GR_Z=GR(1:size(GR,1),4);
+acc_x=acc(1:size(acc,1),2);
+acc_y=acc(1:size(acc,1),3);
+acc_z=acc(1:size(acc,1),4);
 
-RPY_X=RPY(1:size(RPY,1),2);
-RPY_Y=RPY(1:size(RPY,1),3);
-RPY_Z=RPY(1:size(RPY,1),4);
+eacc_x=eacc(1:size(eacc,1),2);
+eacc_y=eacc(1:size(eacc,1),3);
+eacc_z=eacc(1:size(eacc,1),4);
 
-VV_V=VV(1:size(VV,1),2);
-
-function plotRC();
+function plotROLL();
   subplot(231);
-  //scf();
-  plot(RC_THRUST, "color", "black");
-  plot(RC_ROLL,"color", "red");
-  plot(RC_PITCH,"color", "blue");
-  plot(RC_YAW,"color", "cyan");
-  xtitle("RC")
+  plot(urot_roll, "color", "black");
+  plot(rpy_roll,"color", "red");
+  xtitle("ROLL")
 endfunction
 
-function plotACC();
+function plotPITCH();
   subplot(232);
-  //scf();
-  plot(ACC_X,"color", "red");
-  plot(ACC_Y,"color", "blue");
-  plot(ACC_Z,"color", "black");
-  xtitle("Accelerometer")
+  plot(urot_pitch, "color", "black");
+  plot(rpy_pitch,"color", "red");
+  xtitle("PITCH")
 endfunction
 
-function plotW();
+function plotYAW();
   subplot(233);
-  //scf();
-  plot(W_THRUST, "color", "black");
-  plot(W_X,"color", "blue");
-  plot(W_Y,"color", "red");
-  plot(W_Z,"color", "black");
-  xtitle("W")
+  plot(urot_yaw, "color", "black");
+  plot(rpy_yaw,"color", "red");
+  xtitle("YAW")
 endfunction
 
-function plotVV();
-  subplot(233);
-  //scf();
-  plot(VV_V, "color", "black");
-  xtitle("Vertical Speed")
-endfunction
-
-function plotAX();
+function plotALFA_ROLL();
   subplot(234);
-  //scf();
-  plot(AX_X,"color", "red");
-  plot(AX_Y,"color", "blue");
-  plot(AX_Z,"color", "black");
-  plot(AX_T,"color", "black");
-  xtitle("AX")
+  plot(alfa_roll, "color", "black");
+  plot(ealfa_roll,"color", "red");
+  xtitle("ALFA_ROLL")
 endfunction
 
-function plotY();
-  subplot(234);
-  //scf();
-  plot(Y_X,"color", "red");
-  plot(Y_Y,"color", "blue");
-  plot(Y_Z,"color", "black");
-  plot(Y_T,"color", "black");
-  xtitle("Y")
-endfunction
-
-function plotGR();
+function plotALFA_PITCH();
   subplot(235);
-  //scf();
-  plot(GR_X,"color", "red");
-  plot(GR_Y,"color", "blue");
-  plot(GR_Z,"color", "black");
-  xtitle("GR")
+  plot(alfa_pitch, "color", "black");
+  plot(ealfa_pitch,"color", "red");
+  xtitle("ALFA_PITCH")
 endfunction
 
-function plotRPY();
+function plotALFA_YAW();
   subplot(236);
-  //scf();
-  plot(RPY_X,"color", "red");
-  plot(RPY_Y,"color", "blue");
-  plot(RPY_Z,"color", "black");
-  xtitle("RPY")
+  plot(alfa_yaw, "color", "black");
+  plot(ealfa_yaw,"color", "red");
+  xtitle("ALFA_YAW")
 endfunction
 
-
-function R = mroll(r);
-  R=[1,0,0;0,cos(r),-sin(r);0, sin(r), cos(r)];
-endfunction
-function R = mpitch(r);
-  R=[cos(r),0,sin(r);0,1,0;-sin(r),0,cos(r)];
-endfunction
-function R = myaw(r);
-  R=[cos(r),-sin(r),0;sin(r),cos(r),0;0,0,1];
-endfunction
-function R = mrpy(r);
-  R = myaw(r(3))*mpitch(r(2))*mroll(r(1));
-endfunction
-function R = mrp(r);
-  R = mpitch(r(2))*mroll(r(1));
-endfunction
-function V = rot(X,R);
-  V=[0];
-  s = min(size(X,1),size(R,1));
-  for i=1:s
-     V(i,1:3) = (mrpy(R(i,1:3)')*(X(i,1:3)'))'
-  end
-endfunction
-function V = invRot(X,R);
-  V=[0];
-  s = min(size(X,1),size(R,1));
-  for i=1:s
-     V(i,1:3) = (inv(mrpy(R(i,1:3)'))*(X(i,1:3)'))'
-  end
-endfunction
-function V = rotRP(X,R);
-  V=[0];
-  s = min(size(X,1),size(R,1));
-  for i=1:s
-     V(i,1:3) = (mrp(R(i,1:3)')*(X(i,1:3)'))'
-  end
-endfunction
-function V = accIf(A,G,R);
-  s = min(min(size(A,1),size(G,1)), size(R,1));
-  V = rotRP(A(1:s,1:3)-G(1:s,1:3),R(1:s,1:3))
+function plotACCX();
+  subplot(311);
+  plot(uacc_x, "color", "black");
+  plot(acc_x,"color", "red");
+  plot(eacc_x,"color", "cyan");
+  xtitle("ACCX")
 endfunction
 
-function V = accIf2(A,R);
-  s = min(size(A,1), size(R,1));
-  G=[];
-  G(1:s,1)=0;
-  G(1:s,2)=0;
-  G(1:s,3)=-9.8;
-  V = invRot(rot(A(1:s,1:3),R(1:s,1:3))+G(1:s,1:3),R(1:s,1:3))
+function plotACCY();
+  subplot(312);
+  plot(uacc_y, "color", "black");
+  plot(acc_y,"color", "red");
+  plot(eacc_y,"color", "cyan");
+  xtitle("ACCY")
 endfunction
 
-s = min(min(size(ACC,1),size(GR,1)),size(RPY,1));
-//ACC_IF=accIf(ACC(1:s,2:4), GR(1:s,2:4), RPY(1:s,2:4));
-ACC_IF=accIf2(ACC(1:s,2:4), RPY(1:s,2:4));
-ACC_IF_X=ACC_IF(1:size(ACC_IF,1),1);
-ACC_IF_Y=ACC_IF(1:size(ACC_IF,1),2);
-ACC_IF_Z=ACC_IF(1:size(ACC_IF,1),3);
-
-function plotACC_IF();
-  scf();
-  plot(ACC_IF_X,"color", "red");
-  plot(ACC_IF_Y,"color", "blue");
-  plot(ACC_IF_Z,"color", "black");
-  xtitle("ACC_IF")
+function plotACCZ();
+  subplot(313);
+  plot(uacc_z, "color", "black");
+  plot(acc_z,"color", "red");
+  plot(eacc_z,"color", "cyan");
+  xtitle("ACCZ")
 endfunction
 
-plotRC();
-plotACC();
-//plotW();
-plotVV();
-//plotAX();
-plotY();
-plotGR();
-plotRPY();
-plotACC_IF();
+function plotSPEED();
+  subplot(211);
+  plot(speed_x, "color", "green");
+  plot(speed_y,"color", "red");
+  plot(speed_z,"color", "black");
+  xtitle("SPEED")
+endfunction
+
+plotROLL();
+plotPITCH();
+plotYAW();
+plotALFA_ROLL();
+plotALFA_PITCH();
+plotALFA_YAW();
+scf();
+plotACCX();
+plotACCY();
+plotACCZ();
+scf();
+plotSPEED();
+
 EOF
 

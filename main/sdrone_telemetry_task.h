@@ -11,41 +11,26 @@
 #include <wsserver.h>
 #include <sdrone_controller_task.h>
 
-#define VERTICAL_DATA_ONLY
-
-#define MESSAGE_RC            0x01
+#define MESSAGE_UROT          0x01
 #define MESSAGE_RPY           0x02
-#define MESSAGE_ACC           0x03
-#define MESSAGE_W             0x04
-#define MESSAGE_AXIS          0x05
-#define MESSAGE_GRAVITY       0x06
-#define MESSAGE_V             0x07
-#define MESSAGE_X             0x08
-#define MESSAGE_U             0x09
-#define MESSAGE_Y             0x0A
-#define MESSAGE_Z_DATA        0x0B
-#define NUM_MESSAGES          0x0B
+#define MESSAGE_ALFA          0x03
+#define MESSAGE_EALFA         0x04
+#define MESSAGE_UACC          0x05
+#define MESSAGE_SPEED         0x06
+#define MESSAGE_ACC           0x07
+#define MESSAGE_EACC          0x08
+#define NUM_MESSAGES          0x08
 
 typedef struct {
 	uint16_t m_type;
 	uint32_t m_timestamp;
 	union {
+		// rotational
 		struct {
-			int16_t rc_t;
-			float   x_t;
-			float   u_t;
-			float   w_t;
-			float   y_t;
-			float   vertical_v;
-		} z_data;
-		struct {
-			int16_t throttle;
-			int16_t roll;
-			int16_t pitch;
-			int16_t yaw;
-			int16_t aux1;
-			int16_t aux2;
-		} rc;
+			float roll;
+			float pitch;
+			float yaw;
+		} urot;
 		struct {
 			float roll;
 			float pitch;
@@ -55,43 +40,33 @@ typedef struct {
 			float x;
 			float y;
 			float z;
+		} alfa;
+		struct {
+			float eroll;
+			float epitch;
+			float eyaw;
+		} ealfa;
+		// linear
+		struct {
+			float x;
+			float y;
+			float z;
+		} uacc;
+		struct {
+			float x;
+			float y;
+			float z;
+		} speed;
+		struct {
+			float x;
+			float y;
+			float z;
 		} acc;
 		struct {
-			float x;
-			float y;
-			float z;
-			float thrust;
-		} x;
-		struct {
-			float x;
-			float y;
-			float z;
-			float thrust;
-		} u;
-		struct {
-			float x;
-			float y;
-			float z;
-			float thrust;
-		} w;
-		struct {
-			float x;
-			float y;
-			float z;
-			float thrust;
-		} y;
-		struct {
-			float x;
-			float y;
-			float z;
-			float thrust;
-		} axis;
-		struct {
-			float x;
-			float y;
-			float z;
-		} gravity;
-		float vertical_v;
+			float ex;
+			float ey;
+			float ez;
+		} eacc;
 	};
 } sdrone_telemetry_data_t;
 
