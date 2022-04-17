@@ -25,3 +25,7 @@ This software is under construction
 8) Propellers
 9) The Board (a simple ESP32 board)
 10) Cup of coffee
+
+<h1>The first test</h1>
+
+[![Watch the video](http://img.youtube.com/vi/N0eg7YZjhg0/0.jpg)](https://youtube.com/shorts/mvMZztF52lA?feature=share)
