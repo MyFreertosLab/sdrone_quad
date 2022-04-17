@@ -1,8 +1,8 @@
 ESP32 ESP-IDF Drone
 ===================
 
-This is a Drone Test Implementation with esp-idf and esp32.
-This software is under construction
+This is a Drone Implementation with esp-idf and esp32.
+This software is under construction, but it works.
 
 ```
   git clone --recursive https://github.com/MyFreertosLab/sdrone_quad.git
@@ -16,7 +16,7 @@ This software is under construction
 </p>
 
 1) The frame
-2) RC TX/RX (I use FlySky I-BUS)
+2) RC TX/RX (I use FlySky I-BUS, but works well with PPM also)
 3) PPM Encoder (if you not use FlySky I-Bus)
 4) IMU (mpu9250) with at least accelerometer and gyroscope
 5) Battery
